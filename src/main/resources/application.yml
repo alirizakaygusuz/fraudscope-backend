@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: fraudscope
+
+  ai:
+    vectorstore:
+      azure:
+        enabled: false
+
+  messages:
+    basename: currency_type,account_type,transaction_status
+    encoding: UTF-8
+    fallback-to-system-locale: false
