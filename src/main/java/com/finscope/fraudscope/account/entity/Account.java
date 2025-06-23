@@ -2,6 +2,9 @@ package com.finscope.fraudscope.account.entity;
 
 import java.math.BigDecimal;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.finscope.fraudscope.common.audit.SoftDeletableAuditBase;
 import com.finscope.fraudscope.common.enums.AccountType;
 import com.finscope.fraudscope.common.enums.CurrencyType;
@@ -13,6 +16,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -21,34 +25,39 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
-@Table(name = "accounts")
+@Table(
+	    name = "accounts",
+	    indexes = {
+	        @Index(name = "idx_accounts_deleted", columnList = "deleted")}
+	  )
+@SQLDelete(sql = "UPDATE accounts SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Account extends SoftDeletableAuditBase{
+public class Account extends SoftDeletableAuditBase {
 
 	@Column(nullable = false, unique = true, length = 34)
 	private String accountNumber;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CurrencyType currency;
-	
-	private AccountType accountType;
-	
-	
+
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private boolean active= true;
-	
+	private AccountType accountType;
+
+	@Column(nullable = false)
+	private boolean active = true;
+
 	@Column(nullable = false, precision = 19, scale = 4)
 	private BigDecimal balance;
-	
-	@ManyToOne(fetch = FetchType.LAZY , cascade = {CascadeType.PERSIST , CascadeType.MERGE} )
-	@JoinColumn(name = "user_id" ,nullable = false)
+
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
-	
-	
+
 }

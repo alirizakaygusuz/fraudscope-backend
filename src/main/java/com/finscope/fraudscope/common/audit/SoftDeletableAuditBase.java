@@ -16,10 +16,10 @@ public class SoftDeletableAuditBase extends AuditBase {
 	
 	@Column(nullable = false)
 	@NotNull(message = "Deleted flag cannot be null")
-
 	private Boolean deleted = false;
 	
-	
+    private String deletedBy;
+
 	private LocalDateTime deletedAt;
 
 }
