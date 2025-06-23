@@ -8,6 +8,6 @@ spring:
         enabled: false
 
   messages:
-    basename: currency_type,account_type,transaction_status
+    basename: currency_type,account_type,transaction_status,transaction_type,approval_status
     encoding: UTF-8
     fallback-to-system-locale: false
