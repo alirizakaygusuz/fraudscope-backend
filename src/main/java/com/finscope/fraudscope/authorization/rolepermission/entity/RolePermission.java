@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.authorization.permission.entity.Permission;
 import com.finscope.fraudscope.authorization.role.entity.Role;
 import com.finscope.fraudscope.common.audit.SoftDeletableAuditBase;
 import com.finscope.fraudscope.common.enums.ApprovalStatus;
-import com.finscope.fraudscope.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +52,7 @@ public class RolePermission extends SoftDeletableAuditBase {
 	private Permission permission;
 
 	@Column(name = "granted_by", nullable = false)
-	private User grantedBy;
+	private AuthUser grantedBy;
 
 	@Column(name = "granted_at", nullable = false)
 	private LocalDateTime grantedAt;
@@ -67,7 +67,7 @@ public class RolePermission extends SoftDeletableAuditBase {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "approved_by")
-	private User approvedBy;
+	private AuthUser approvedBy;
 
 	@Column(name = "approved_at")
 	private LocalDateTime approvedAt;

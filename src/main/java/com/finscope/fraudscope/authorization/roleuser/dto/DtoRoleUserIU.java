@@ -19,5 +19,5 @@ public class DtoRoleUserIU {
 	
 	@NotNull(message = "User ID must not be null")
 	@Positive(message = "User ID must be a positive number")
-	private Long userId;
+	private Long authUserId;
 }

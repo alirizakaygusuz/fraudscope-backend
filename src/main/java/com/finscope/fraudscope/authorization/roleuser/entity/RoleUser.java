@@ -3,9 +3,9 @@ package com.finscope.fraudscope.authorization.roleuser.entity;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.authorization.role.entity.Role;
 import com.finscope.fraudscope.common.audit.SoftDeletableAuditBase;
-import com.finscope.fraudscope.user.entity.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -39,6 +39,6 @@ public class RoleUser extends SoftDeletableAuditBase {
 	private Role role;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "auth_user_id" , nullable = false)
+	private AuthUser authUser;
 }

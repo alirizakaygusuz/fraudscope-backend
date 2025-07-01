@@ -60,4 +60,8 @@ public class Account extends SoftDeletableAuditBase {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
+	
+	public void setId(Long id) {
+		super.id = id;
+	}
 }
