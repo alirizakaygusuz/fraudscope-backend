@@ -18,8 +18,11 @@ public class SoftDeletableAuditBase extends AuditBase {
 	@NotNull(message = "Deleted flag cannot be null")
 	private Boolean deleted = false;
 	
-    private String deletedBy;
 
+	@Column(name = "delete_by")
+	String deletedBy;
+
+	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 
 }

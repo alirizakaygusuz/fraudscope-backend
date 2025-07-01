@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import com.finscope.fraudscope.common.dto.SoftDeletableAuditDtoBase;
 import com.finscope.fraudscope.common.enums.AccountType;
 import com.finscope.fraudscope.common.enums.CurrencyType;
-import com.finscope.fraudscope.user.dto.DtoUser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +27,6 @@ public class DtoAccount extends SoftDeletableAuditDtoBase {
 
 	private BigDecimal balance;
 
-	private DtoUser user;
+	private Long userId;
 
 }

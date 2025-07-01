@@ -21,4 +21,11 @@ public interface AccountMapper extends BaseMapper<Account, DtoAccount, DtoAccoun
 	@Override
 	void updateFromDtoIU(DtoAccountIU dtoIU, @MappingTarget Account entity);
 
+	
+	default Account map(Long id) {
+	    if (id == null) return null;
+	    Account account = new Account();
+	    account.setId(id); // setter şart
+	    return account;
+	}
 }

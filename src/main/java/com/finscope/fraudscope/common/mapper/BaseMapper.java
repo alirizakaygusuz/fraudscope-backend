@@ -2,6 +2,7 @@ package com.finscope.fraudscope.common.mapper;
 
 import org.mapstruct.MappingTarget;
 
+
 public interface BaseMapper<Entity, Dto, DtoIU> {
 
 	Dto toDto(Entity entity);

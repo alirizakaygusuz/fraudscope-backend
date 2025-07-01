@@ -1,12 +1,12 @@
 package com.finscope.fraudscope.authorization.permission.mapper;
 
-import java.security.Permission;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
 import com.finscope.fraudscope.authorization.permission.dto.DtoPermission;
 import com.finscope.fraudscope.authorization.permission.dto.DtoPermissionIU;
+import com.finscope.fraudscope.authorization.permission.entity.Permission;
 import com.finscope.fraudscope.common.config.CentralMapperConfig;
 import com.finscope.fraudscope.common.mapper.BaseMapper;
 
