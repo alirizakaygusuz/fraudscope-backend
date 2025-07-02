@@ -32,6 +32,8 @@ public class SecurityConfig {
 
 	public static final String LOGIN = "/api/auth/login";
 
+	public static final String ACCOUNT_VERIFY = "/api/auth/verify";
+	
 	@Bean
 	 SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
@@ -39,7 +41,7 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			.securityContext(securityContext -> securityContext.requireExplicitSave(false))
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(REGISTER, LOGIN).permitAll()
+				.requestMatchers(REGISTER, LOGIN,ACCOUNT_VERIFY).permitAll()
 				.anyRequest().authenticated()
 			)
 			.exceptionHandling(handling -> handling

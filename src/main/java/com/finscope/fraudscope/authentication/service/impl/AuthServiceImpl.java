@@ -16,6 +16,9 @@ import com.finscope.fraudscope.authentication.refreshtoken.entity.RefreshToken;
 import com.finscope.fraudscope.authentication.refreshtoken.repository.RefreshTokenRepository;
 import com.finscope.fraudscope.authentication.repository.AuthUserRepository;
 import com.finscope.fraudscope.authentication.service.AuthService;
+import com.finscope.fraudscope.authentication.verification.enums.TokenPurpose;
+import com.finscope.fraudscope.authentication.verification.token.entity.VerificationToken;
+import com.finscope.fraudscope.authentication.verification.token.service.VerificationTokenService;
 import com.finscope.fraudscope.authorization.role.entity.Role;
 import com.finscope.fraudscope.authorization.role.repository.RoleRepository;
 import com.finscope.fraudscope.authorization.roleuser.entity.RoleUser;
@@ -36,6 +39,8 @@ public class AuthServiceImpl implements AuthService{
 	private final RefreshTokenRepository refreshTokenRepository;
 	
 	private final JWTService jwtService;
+	
+	private final VerificationTokenService verificationTokenService;
 	
 	private final AuthMapper authMapper;
 
@@ -59,7 +64,13 @@ public class AuthServiceImpl implements AuthService{
 		AuthUser authUser = buildAuthUserWithDefaultRole(registerRequest);
 	    AuthUser savedUser = authUserRepository.save(authUser);
 	    
+	    //Create Verification  Token
+	    VerificationToken verificationToken= verificationTokenService.createVerificationToken(savedUser , TokenPurpose.ACCOUNT_VERIFICATION);
 	    
+	    //Send verification email
+	    verificationTokenService.sendVerificationEmail(verificationToken);
+	    
+	   
 	     
 	    
 	    RefreshToken refreshToken = createAndSaveRefreshToken(savedUser , registerRequest.getIpAddress() , registerRequest.getUserAgent());
