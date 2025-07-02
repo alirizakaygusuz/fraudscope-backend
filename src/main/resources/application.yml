@@ -29,7 +29,19 @@ spring:
     basename: currency_type,account_type,transaction_status,transaction_type,approval_status
     encoding: UTF-8
     fallback-to-system-locale: false
-
+#SMTP  
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_FROM}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 # JWT 
 jwt:
   secret:
@@ -45,5 +57,7 @@ logging:
   level:
     org.springframework.boot.context.config: DEBUG
 
-
+verification:
+  token:
+    expiration-minutes: 240 # 4 hour
 

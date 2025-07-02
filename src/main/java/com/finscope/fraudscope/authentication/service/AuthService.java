@@ -7,4 +7,10 @@ public interface AuthService {
 
 	AuthReponse register(RegisterRequest registerRequest);
 	
+	
+	
+	
+	
+	
+	
 }
