@@ -1,4 +1,5 @@
 package com.finscope.fraudscope.authentication.service.impl;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.finscope.fraudscope.authentication.dto.AuthReponse;
+import com.finscope.fraudscope.authentication.dto.LoginRequest;
 import com.finscope.fraudscope.authentication.dto.RegisterRequest;
 import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.authentication.jwt.JWTService;
@@ -28,98 +30,119 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
 
-    private final BCryptPasswordEncoder passwordEncoder;
+	private final BCryptPasswordEncoder passwordEncoder;
 
 	private final AuthUserRepository authUserRepository;
-	
+
 	private final RoleRepository roleRepository;
-	
+
 	private final RefreshTokenRepository refreshTokenRepository;
-	
+
 	private final JWTService jwtService;
-	
+
 	private final VerificationTokenService verificationTokenService;
-	
+
 	private final AuthMapper authMapper;
 
 	@Value("${jwt.refresh.token.expiration-minutes}")
 	private long refreshTokenExpiration;
 
-	
-   
-	
 	@Override
 	public AuthReponse register(RegisterRequest registerRequest) {
-		if(authUserRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
-		    throw new IllegalArgumentException("Username already exists");
+		if (authUserRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+			throw new IllegalArgumentException("Username already exists");
 
 		}
-		if(authUserRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-		    throw new IllegalArgumentException("Email  already exists");
+		if (authUserRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+			throw new IllegalArgumentException("Email  already exists");
 
 		}
-		
+
 		AuthUser authUser = buildAuthUserWithDefaultRole(registerRequest);
-	    AuthUser savedUser = authUserRepository.save(authUser);
-	    
-	    //Create Verification  Token
-	    VerificationToken verificationToken= verificationTokenService.createVerificationToken(savedUser , TokenPurpose.ACCOUNT_VERIFICATION);
-	    
-	    //Send verification email
-	    verificationTokenService.sendVerificationEmail(verificationToken);
-	    
-	   
-	     
-	    
-	    RefreshToken refreshToken = createAndSaveRefreshToken(savedUser , registerRequest.getIpAddress() , registerRequest.getUserAgent());
-	    String accessToken = jwtService.generateToken(savedUser);
+		AuthUser savedUser = authUserRepository.save(authUser);
 
-	    AuthReponse authReponse= authMapper.toResponse(savedUser, refreshToken.getToken(), accessToken);
+		// Create Verification Token
+		VerificationToken verificationToken = verificationTokenService.createVerificationToken(savedUser,
+				TokenPurpose.ACCOUNT_VERIFICATION);
+
+		// Send verification email
+		verificationTokenService.sendVerificationEmail(verificationToken);
+
+		RefreshToken refreshToken = createAndSaveRefreshToken(savedUser, registerRequest.getIpAddress(),
+				registerRequest.getUserAgent());
+		String accessToken = jwtService.generateToken(savedUser);
+
+		AuthReponse authReponse = authMapper.toResponse(savedUser, refreshToken.getToken(), accessToken);
 
 		return authReponse;
 	}
-	
-	
+
 	private RefreshToken createAndSaveRefreshToken(AuthUser savedAuthUser, String ipAddress, String userAgent) {
 
-	    RefreshToken refreshToken = new RefreshToken();
-	    refreshToken.setToken(UUID.randomUUID().toString());
-	    refreshToken.setAuthUser(savedAuthUser);
-	    refreshToken.setExpiryDate(LocalDateTime.now().plusMinutes(refreshTokenExpiration)); 
-	    refreshToken.setIpAddress(ipAddress);
-	    refreshToken.setUserAgent(userAgent);
+		RefreshToken refreshToken = new RefreshToken();
+		refreshToken.setToken(UUID.randomUUID().toString());
+		refreshToken.setAuthUser(savedAuthUser);
+		refreshToken.setExpiryDate(LocalDateTime.now().plusMinutes(refreshTokenExpiration));
+		refreshToken.setIpAddress(ipAddress);
+		refreshToken.setUserAgent(userAgent);
 
-	    refreshTokenRepository.save(refreshToken);
-	    
-	    return refreshToken;
+		refreshTokenRepository.save(refreshToken);
+
+		return refreshToken;
 	}
-	
-	
-	
+
 	private AuthUser buildAuthUserWithDefaultRole(RegisterRequest registerRequest) {
-		
+
 		AuthUser authUser = new AuthUser();
 		authUser.setUsername(registerRequest.getUsername());
 		authUser.setEmail(registerRequest.getEmail());
 		authUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-		
-		// ENUM base Role Asssign
-	    Role userRole = roleRepository.findByName(PredefinedRole.USER.name())
-	        .orElseThrow(() -> new RuntimeException("Default ROLE is USER not found"));
 
-	    RoleUser roleUser = new RoleUser();
-	    roleUser.setRole(userRole);
+		// ENUM base Role Asssign
+		Role userRole = roleRepository.findByName(PredefinedRole.USER.name())
+				.orElseThrow(() -> new RuntimeException("Default ROLE is USER not found"));
+
+		RoleUser roleUser = new RoleUser();
+		roleUser.setRole(userRole);
 		roleUser.setAuthUser(authUser);
-		
+
 		authUser.setUserRoles(Set.of(roleUser));
-		
-		
+
 		return authUser;
 	}
 
+	@Override
+	public AuthReponse login(LoginRequest loginRequest) {
+
+		AuthUser authUser = validateLogin(loginRequest.getEmailOrUsername(), loginRequest.getPassword());
+		
+		
+		RefreshToken refreshToken = createAndSaveRefreshToken(authUser, loginRequest.getIpAddress(), loginRequest.getUserAgent());
+		
+		String accessToken = jwtService.generateToken(authUser);
+		
+		
+		return authMapper.toResponse(authUser, refreshToken.getToken(), accessToken);
+	}
+
+	private AuthUser validateLogin(String usernameOrEmail, String password) {
+		AuthUser authUser = authUserRepository.findByUsernameOrEmail(usernameOrEmail)
+				.orElseThrow(() -> new IllegalArgumentException("User not found with given credentials"));
+
+		if (!passwordEncoder.matches(password, authUser.getPassword())) {
+			throw new IllegalArgumentException("Invalid credentials");
+
+		}
+
+		if (!authUser.isEnabled()) {
+			throw new IllegalStateException("Account not activated. Please verify your email.");
+
+		}
+
+		return authUser;
+
+	}
 
 }
-
-
