@@ -1,15 +1,16 @@
 package com.finscope.fraudscope.authentication.service;
 
-import com.finscope.fraudscope.authentication.dto.AuthReponse;
+import com.finscope.fraudscope.authentication.dto.LoginResponse;
 import com.finscope.fraudscope.authentication.dto.LoginRequest;
 import com.finscope.fraudscope.authentication.dto.RegisterRequest;
+import com.finscope.fraudscope.authentication.dto.RegisterResponse;
 
 public interface AuthService {
 
-	AuthReponse register(RegisterRequest registerRequest);
+	RegisterResponse register(RegisterRequest registerRequest);
 	
 	
-	AuthReponse login(LoginRequest loginRequest);
+	LoginResponse login(LoginRequest loginRequest);
 	
 	
 	

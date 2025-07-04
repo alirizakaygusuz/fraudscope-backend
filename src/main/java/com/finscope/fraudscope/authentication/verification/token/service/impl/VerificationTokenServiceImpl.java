@@ -13,6 +13,9 @@ import com.finscope.fraudscope.authentication.verification.enums.TokenStatus;
 import com.finscope.fraudscope.authentication.verification.token.entity.VerificationToken;
 import com.finscope.fraudscope.authentication.verification.token.repository.VerificationTokenRepository;
 import com.finscope.fraudscope.authentication.verification.token.service.VerificationTokenService;
+import com.finscope.fraudscope.common.exception.BaseException;
+import com.finscope.fraudscope.common.exception.ErrorMessage;
+import com.finscope.fraudscope.common.exception.enums.ErrorType;
 import com.finscope.fraudscope.common.notification.EmailService;
 
 import lombok.RequiredArgsConstructor;
@@ -52,7 +55,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
 	@Override
 	public void verifyAccount(String token) {
 		VerificationToken verificationToken = verificationTokenRepository.findByVerificationToken(token)
-				.orElseThrow(() -> new RuntimeException("Token not found or invalid."));
+				.orElseThrow(() -> new BaseException(new ErrorMessage(ErrorType.VERIFICATION_TOKEN_NOT_FOUND)));
 
 		if (verificationToken.getTokenStatus() == TokenStatus.ACTIVE
 				&& verificationToken.getExpiryDateTime().isAfter(LocalDateTime.now())) {
@@ -65,7 +68,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
 			verificationTokenRepository.save(verificationToken);
 
 		} else {
-			throw new RuntimeException("Token has expired or already been used.");
+			throw new BaseException(new ErrorMessage(ErrorType.VERIFICATION_TOKEN_INVALID_OR_EXPIRED));
 		}
 	}
 
