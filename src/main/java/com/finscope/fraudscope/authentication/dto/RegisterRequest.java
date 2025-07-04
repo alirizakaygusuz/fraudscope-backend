@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class RegisterRequest implements ClientMetadataAware{
 
 	@NotBlank(message = "Username cannot be blank")
 	@Size(min = 2, max = 50)

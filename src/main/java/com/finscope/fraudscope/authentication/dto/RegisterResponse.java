@@ -9,13 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthReponse {
-
-	private String accessToken;
-	
-	private String refreshToken;
+public class RegisterResponse {
 	
 	private String username;
 	
 	private String email;
+	
+	private String message;
 }

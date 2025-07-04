@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class LoginRequest implements ClientMetadataAware {
 
 	@NotBlank(message = "Email or Username cannot be blank")
 	private String emailOrUsername;

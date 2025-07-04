@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.finscope.fraudscope.authentication.dto.AuthReponse;
+import com.finscope.fraudscope.authentication.dto.LoginResponse;
 import com.finscope.fraudscope.authentication.dto.LoginRequest;
 import com.finscope.fraudscope.authentication.dto.RegisterRequest;
+import com.finscope.fraudscope.authentication.dto.RegisterResponse;
 import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.authentication.jwt.JWTService;
 import com.finscope.fraudscope.authentication.mapper.AuthMapper;
@@ -25,6 +26,9 @@ import com.finscope.fraudscope.authorization.role.entity.Role;
 import com.finscope.fraudscope.authorization.role.repository.RoleRepository;
 import com.finscope.fraudscope.authorization.roleuser.entity.RoleUser;
 import com.finscope.fraudscope.common.enums.PredefinedRole;
+import com.finscope.fraudscope.common.exception.BaseException;
+import com.finscope.fraudscope.common.exception.ErrorMessage;
+import com.finscope.fraudscope.common.exception.enums.ErrorType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,15 +54,9 @@ public class AuthServiceImpl implements AuthService {
 	private long refreshTokenExpiration;
 
 	@Override
-	public AuthReponse register(RegisterRequest registerRequest) {
-		if (authUserRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
-			throw new IllegalArgumentException("Username already exists");
+	public RegisterResponse register(RegisterRequest registerRequest) {
 
-		}
-		if (authUserRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-			throw new IllegalArgumentException("Email  already exists");
-
-		}
+		throwIfUserExists(registerRequest);
 
 		AuthUser authUser = buildAuthUserWithDefaultRole(registerRequest);
 		AuthUser savedUser = authUserRepository.save(authUser);
@@ -70,13 +68,21 @@ public class AuthServiceImpl implements AuthService {
 		// Send verification email
 		verificationTokenService.sendVerificationEmail(verificationToken);
 
-		RefreshToken refreshToken = createAndSaveRefreshToken(savedUser, registerRequest.getIpAddress(),
-				registerRequest.getUserAgent());
-		String accessToken = jwtService.generateToken(savedUser);
+		RegisterResponse registerResponse = authMapper.toRegisterResponse(savedUser);
+		registerResponse.setMessage("Please verify your email!!!");
 
-		AuthReponse authReponse = authMapper.toResponse(savedUser, refreshToken.getToken(), accessToken);
+		return registerResponse;
+	}
 
-		return authReponse;
+	private void throwIfUserExists(RegisterRequest registerRequest) {
+		if (authUserRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+			throw new BaseException(new ErrorMessage(ErrorType.USERNAME_ALREADY_EXISTS, registerRequest.getUsername()));
+
+		}
+		if (authUserRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+			throw new BaseException(new ErrorMessage(ErrorType.EMAIL_ALREADY_EXISTS, registerRequest.getEmail()));
+
+		}
 	}
 
 	private RefreshToken createAndSaveRefreshToken(AuthUser savedAuthUser, String ipAddress, String userAgent) {
@@ -102,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
 
 		// ENUM base Role Asssign
 		Role userRole = roleRepository.findByName(PredefinedRole.USER.name())
-				.orElseThrow(() -> new RuntimeException("Default ROLE is USER not found"));
+				.orElseThrow(() -> new BaseException(new ErrorMessage(ErrorType.ROLE_NOT_FOUND)));
 
 		RoleUser roleUser = new RoleUser();
 		roleUser.setRole(userRole);
@@ -114,31 +120,29 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public AuthReponse login(LoginRequest loginRequest) {
+	public LoginResponse login(LoginRequest loginRequest) {
 
 		AuthUser authUser = validateLogin(loginRequest.getEmailOrUsername(), loginRequest.getPassword());
-		
-		
-		RefreshToken refreshToken = createAndSaveRefreshToken(authUser, loginRequest.getIpAddress(), loginRequest.getUserAgent());
-		
+
+		RefreshToken refreshToken = createAndSaveRefreshToken(authUser, loginRequest.getIpAddress(),
+				loginRequest.getUserAgent());
+
 		String accessToken = jwtService.generateToken(authUser);
-		
-		
-		return authMapper.toResponse(authUser, refreshToken.getToken(), accessToken);
+
+		return authMapper.toLoginResponse(authUser, refreshToken.getToken(), accessToken);
 	}
 
 	private AuthUser validateLogin(String usernameOrEmail, String password) {
-		AuthUser authUser = authUserRepository.findByUsernameOrEmail(usernameOrEmail)
-				.orElseThrow(() -> new IllegalArgumentException("User not found with given credentials"));
+		AuthUser authUser = authUserRepository.findByUsernameOrEmail(usernameOrEmail).orElseThrow(
+				() -> new BaseException(new ErrorMessage(ErrorType.USERNAME_OR_EMAIL_NOT_FOUND, usernameOrEmail)));
 
 		if (!passwordEncoder.matches(password, authUser.getPassword())) {
-			throw new IllegalArgumentException("Invalid credentials");
+			throw new BaseException(new ErrorMessage(ErrorType.INVALID_PASSWORD, password));
 
 		}
 
 		if (!authUser.isEnabled()) {
-			throw new IllegalStateException("Account not activated. Please verify your email.");
-
+			throw new BaseException(new ErrorMessage(ErrorType.ACCOUNT_NOT_VERIFIED));
 		}
 
 		return authUser;
