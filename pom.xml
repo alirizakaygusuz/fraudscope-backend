@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.0</version>
+		<version>3.2.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.finscope</groupId>
@@ -95,7 +95,7 @@
 		<dependency>
  			 <groupId>org.springdoc</groupId>
  			 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			  <version>2.5.0</version>
+			  <version>2.3.0</version>
 		</dependency>
 		<!--MAPSTRUCT-->
 		<dependency>
@@ -163,6 +163,11 @@
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		<!--AOP-->
+		<dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-aop</artifactId>
+    	</dependency>
 
 	</dependencies>
 	<dependencyManagement>
@@ -187,6 +192,7 @@
 					<path>
 						<groupId>org.projectlombok</groupId>
 						<artifactId>lombok</artifactId>
+						<version>1.18.30</version>
 					</path>
 					<path>
 						<groupId>org.mapstruct</groupId>

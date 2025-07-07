@@ -29,6 +29,12 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(value = { Exception.class })
 	public ResponseEntity<ApiError<?>> handleUnexpectedException(Exception exception, WebRequest webRequest) {
+		
+	    String path = webRequest.getDescription(false).replace("uri=", "");
+	    if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui")) {
+	    	throw new RuntimeException(exception);
+	    }
+	    
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		if (exception instanceof IllegalArgumentException) {
 			status = HttpStatus.BAD_REQUEST;

@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -15,6 +16,7 @@ import com.finscope.fraudscope.common.bootstrap.DotenvInitializer;
 @SpringBootApplication(exclude = {
 		org.springframework.ai.vectorstore.azure.autoconfigure.AzureVectorStoreAutoConfiguration.class })
 @EnableScheduling
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class FraudscopeApplication {
 
 	public static void main(String[] args) {
