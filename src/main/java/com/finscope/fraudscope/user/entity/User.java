@@ -18,10 +18,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(
@@ -33,8 +34,8 @@ import lombok.Setter;
 @SQLRestriction("deleted = false")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@SuperBuilder
+@NoArgsConstructor(force = true)
 public class User extends SoftDeletableAuditBase {
 	
 	@OneToOne
@@ -59,7 +60,8 @@ public class User extends SoftDeletableAuditBase {
 	@Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 	
-	@Column(name = "is_verified", nullable = false)
+    @Builder.Default
+	@Column(name = "is_verified", nullable = false,columnDefinition = "BOOLEAN DEFAULT FALSE")
 	private boolean isVerified = false;
 
 	

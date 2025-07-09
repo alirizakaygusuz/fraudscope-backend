@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuditDtoBase {
+public abstract class AuditDtoBase {
 
 	private Long id;
 

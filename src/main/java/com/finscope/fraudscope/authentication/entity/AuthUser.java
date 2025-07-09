@@ -19,17 +19,18 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "auth_users")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@SuperBuilder
+@NoArgsConstructor(force = true)
 @SQLDelete(sql = "UPDATE auth_users SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class AuthUser extends SoftDeletableAuditBase implements UserDetails {
@@ -42,9 +43,14 @@ public class AuthUser extends SoftDeletableAuditBase implements UserDetails {
 
 	@Column(name = "password", nullable = false)
 	private String password;
-
-	@Column(name = "is_enabled", nullable = false)
+  
+	@Builder.Default
+	@Column(name = "is_enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
 	private boolean isEnabled = false;
+	
+    @Builder.Default
+	@Column(name = "two_factor_enabled", nullable = false , columnDefinition ="BOOLEAN DEFAULT TRUE" )
+	private boolean twoFactorEnabled = true;
 
 	@OneToMany(mappedBy = "authUser", cascade = CascadeType.ALL)
 	private Set<RoleUser> userRoles;

@@ -23,10 +23,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(
@@ -39,8 +40,8 @@ import lombok.Setter;
 @SQLRestriction("deleted = false")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@SuperBuilder
+@NoArgsConstructor(force = true)
 public class RolePermission extends SoftDeletableAuditBase {
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -58,9 +59,11 @@ public class RolePermission extends SoftDeletableAuditBase {
 	private LocalDateTime grantedAt;
 
 	// Account is active or not
+    @Builder.Default
 	@Column(name = "is_active", nullable = false)
 	private boolean isActive = false;
 
+    @Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(name = "approval_status", nullable = false)
 	private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;

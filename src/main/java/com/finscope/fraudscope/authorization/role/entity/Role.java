@@ -15,23 +15,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(
-	    name = "roles",
-	    indexes = {
-	        @Index(name = "idx_roles_deleted", columnList = "deleted")}
-	  )
+@Table(name = "roles", indexes = { @Index(name = "idx_roles_deleted", columnList = "deleted") })
 @SQLDelete(sql = "UPDATE roles SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
+@NoArgsConstructor(force = true)
 public class Role extends SoftDeletableAuditBase {
 
 	@Column(unique = true, nullable = false, length = 64)

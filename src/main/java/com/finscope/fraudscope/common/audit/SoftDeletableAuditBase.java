@@ -2,19 +2,25 @@ package com.finscope.fraudscope.common.audit;
 
 import java.time.LocalDateTime;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @MappedSuperclass
 @Getter
 @Setter
-public class SoftDeletableAuditBase extends AuditBase {
+@SuperBuilder
+@NoArgsConstructor(force = true)
+public abstract class SoftDeletableAuditBase extends AuditBase {
 	
-	
-	@Column(nullable = false)
+    @Builder.Default
+	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
 	@NotNull(message = "Deleted flag cannot be null")
 	private Boolean deleted = false;
 	
