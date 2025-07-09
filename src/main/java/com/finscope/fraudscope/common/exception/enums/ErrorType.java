@@ -26,6 +26,8 @@ public enum ErrorType implements BaseEnum {
     EXPIRED_TOKEN("1012", "Token has expired", HttpStatus.UNAUTHORIZED),
     UNSUPPORTED_TOKEN("1013", "Unsupported token", HttpStatus.BAD_REQUEST),
     GENERAL_TOKEN_EXCEPTION("1014", "Unexpected error while processing token", HttpStatus.INTERNAL_SERVER_ERROR),
+    EMAIL_SENDING_FAILED("1015", "error_type.email_sending_failed", HttpStatus.INTERNAL_SERVER_ERROR),
+
     ;
 	
 	

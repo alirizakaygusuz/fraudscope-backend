@@ -7,7 +7,6 @@ import com.finscope.fraudscope.authentication.verification.token.entity.Verifica
 public interface VerificationTokenService {
 	VerificationToken createVerificationToken(AuthUser authUser, TokenPurpose tokenPurpose);
 	
-	void sendVerificationEmail(VerificationToken verificationToken);
 
 	void verifyAccount(String token);
 

@@ -4,7 +4,8 @@ public enum TokenStatus  {
 
 	ACTIVE , 
 	USED , 
-	EXPIRED
+	EXPIRED,
+	BLOCKED
 	
 	
 	

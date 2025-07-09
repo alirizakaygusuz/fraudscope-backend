@@ -59,7 +59,7 @@ public class AuthController extends BaseResponseController {
 			@ApiResponse(responseCode = "403", description = "Account not verified"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
 	@PostMapping("/login")
-	public ResponseEntity<StandartResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request,
+	public ResponseEntity<StandartResponse<Object>> login(@Valid @RequestBody LoginRequest request,
 			HttpServletRequest httpServletRequest) {
 
 		request.injectClientMetaData(httpServletRequest);
