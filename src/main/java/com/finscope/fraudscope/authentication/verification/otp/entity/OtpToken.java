@@ -48,6 +48,7 @@ public class OtpToken extends AbstractVerificationTokenBase implements MailToken
 	@Override
 	public String getTokenValue() {
 		return this.otpCode;
+		
 	}
 
 	@Override

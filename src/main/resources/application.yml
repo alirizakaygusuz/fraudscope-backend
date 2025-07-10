@@ -70,3 +70,5 @@ springdoc:
 
 otp:
   expiration-seconds: 180
+  delete-after-days: 30
+  max-attempt: 3

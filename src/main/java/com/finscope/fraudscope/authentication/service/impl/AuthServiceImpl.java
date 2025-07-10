@@ -1,9 +1,7 @@
 package com.finscope.fraudscope.authentication.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,13 +16,12 @@ import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.authentication.jwt.JWTService;
 import com.finscope.fraudscope.authentication.mapper.AuthMapper;
 import com.finscope.fraudscope.authentication.refreshtoken.entity.RefreshToken;
-import com.finscope.fraudscope.authentication.refreshtoken.repository.RefreshTokenRepository;
+import com.finscope.fraudscope.authentication.refreshtoken.service.RefreshTokenService;
 import com.finscope.fraudscope.authentication.repository.AuthUserRepository;
 import com.finscope.fraudscope.authentication.service.AuthService;
 import com.finscope.fraudscope.authentication.verification.enums.TokenPurpose;
 import com.finscope.fraudscope.authentication.verification.otp.entity.OtpToken;
 import com.finscope.fraudscope.authentication.verification.otp.service.OtpTokenService;
-import com.finscope.fraudscope.authentication.verification.token.entity.VerificationToken;
 import com.finscope.fraudscope.authentication.verification.token.service.VerificationTokenService;
 import com.finscope.fraudscope.authorization.role.entity.Role;
 import com.finscope.fraudscope.authorization.role.repository.RoleRepository;
@@ -46,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 
 	private final RoleRepository roleRepository;
 
-	private final RefreshTokenRepository refreshTokenRepository;
+	private final RefreshTokenService refreshTokenService;
 
 	private final JWTService jwtService;
 
@@ -91,18 +88,12 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	private RefreshToken createAndSaveRefreshToken(AuthUser savedAuthUser, String ipAddress, String userAgent) {
-		return refreshTokenRepository.save(RefreshToken.builder().token(UUID.randomUUID().toString())
-				.authUser(savedAuthUser).expiryDate(LocalDateTime.now().plusMinutes(refreshTokenExpiration))
-				.ipAddress(ipAddress).userAgent(userAgent).build()
-
-		);
-
-	}
 
 	private AuthUser buildAuthUserWithDefaultRole(RegisterRequest registerRequest) {
-		AuthUser authUser = AuthUser.builder().username(registerRequest.getUsername()).email(registerRequest.getEmail())
-				.password(passwordEncoder.encode(registerRequest.getPassword())).isEnabled(false).twoFactorEnabled(true)
+		AuthUser authUser = AuthUser.builder()
+				.username(registerRequest.getUsername()).email(registerRequest.getEmail())
+				.password(passwordEncoder.encode(registerRequest.getPassword()))
+				.isEnabled(false).twoFactorEnabled(true)
 				.build();
 
 		// ENUM base Role Asssign
@@ -134,12 +125,14 @@ public class AuthServiceImpl implements AuthService {
 			return otpRequiredResponse;
 		}
 
-		RefreshToken refreshToken = createAndSaveRefreshToken(authUser, loginRequest.getIpAddress(),
+		RefreshToken refreshToken = refreshTokenService.createAndSave(authUser, loginRequest.getIpAddress(),
 				loginRequest.getUserAgent());
 
+	
+		
 		String accessToken = jwtService.generateToken(authUser);
 
-		return authMapper.toLoginResponse(authUser, refreshToken.getToken(), accessToken);
+		return authMapper.toLoginResponse(authUser, accessToken, refreshToken.getToken());
 
 	}
 
