@@ -20,10 +20,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(
@@ -35,8 +36,8 @@ import lombok.Setter;
 @SQLRestriction("deleted = false")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@SuperBuilder
+@NoArgsConstructor(force = true)
 public class Account extends SoftDeletableAuditBase {
 
 	@Column(nullable = false, unique = true, length = 34)
@@ -50,7 +51,8 @@ public class Account extends SoftDeletableAuditBase {
 	@Column(nullable = false)
 	private AccountType accountType;
 
-	@Column(nullable = false)
+    @Builder.Default
+	@Column(nullable = false, columnDefinition ="BOOLEAN DEFAULT TRUE")
 	private boolean active = true;
 
 	@Column(nullable = false, precision = 19, scale = 4)

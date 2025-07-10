@@ -23,8 +23,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
@@ -36,6 +39,8 @@ import lombok.Setter;
 	  )
 @SQLDelete(sql = "UPDATE transactions SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
+@SuperBuilder
+@NoArgsConstructor(force = true)
 public class Transaction extends SoftDeletableAuditBase {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,6 +68,7 @@ public class Transaction extends SoftDeletableAuditBase {
     @NotNull(message = "Transaction type must not be null")
     private TransactionType transactionType;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull(message = "Transaction status must not be null")
@@ -70,7 +76,8 @@ public class Transaction extends SoftDeletableAuditBase {
 
     @Column(length = 255)
     private String description;
-
+    
+    @Builder.Default
     @Column(nullable = false)
     @NotNull(message = "Initiation timestamp must not be null")
     private LocalDateTime transactionInitiatedAt = LocalDateTime.now();

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SoftDeletableAuditDtoBase extends AuditDtoBase {
+public abstract class SoftDeletableAuditDtoBase extends AuditDtoBase {
 
 	private Boolean deleted = false;
 

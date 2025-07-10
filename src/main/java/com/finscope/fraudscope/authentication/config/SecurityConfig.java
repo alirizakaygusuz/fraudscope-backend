@@ -31,8 +31,12 @@ public class SecurityConfig {
 	public static final String REGISTER = "/api/auth/register";
 
 	public static final String LOGIN = "/api/auth/login";
+	public static final String LOGIN_VERIFY="/api/auth/login/verify-otp";
+
 
 	public static final String ACCOUNT_VERIFY = "/api/auth/verify";
+	
+
 	
 	public static final String SWAGGER_UI="/swagger-ui/**";
 	public static final String SWAGGER_API_DOCS = "/v3/api-docs/**";
@@ -45,7 +49,7 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			.securityContext(securityContext -> securityContext.requireExplicitSave(false))
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(REGISTER, LOGIN,ACCOUNT_VERIFY,SWAGGER_UI,SWAGGER_API_DOCS).permitAll()
+				.requestMatchers(REGISTER, LOGIN,ACCOUNT_VERIFY,SWAGGER_UI,SWAGGER_API_DOCS,LOGIN_VERIFY).permitAll()
 				.anyRequest().authenticated()
 			)
 			.exceptionHandling(handling -> handling

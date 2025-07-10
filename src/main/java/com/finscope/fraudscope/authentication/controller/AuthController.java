@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.finscope.fraudscope.authentication.dto.LoginRequest;
-import com.finscope.fraudscope.authentication.dto.LoginResponse;
 import com.finscope.fraudscope.authentication.dto.RegisterRequest;
 import com.finscope.fraudscope.authentication.dto.RegisterResponse;
 import com.finscope.fraudscope.authentication.service.AuthService;
@@ -59,7 +58,7 @@ public class AuthController extends BaseResponseController {
 			@ApiResponse(responseCode = "403", description = "Account not verified"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
 	@PostMapping("/login")
-	public ResponseEntity<StandartResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request,
+	public ResponseEntity<StandartResponse<Object>> login(@Valid @RequestBody LoginRequest request,
 			HttpServletRequest httpServletRequest) {
 
 		request.injectClientMetaData(httpServletRequest);

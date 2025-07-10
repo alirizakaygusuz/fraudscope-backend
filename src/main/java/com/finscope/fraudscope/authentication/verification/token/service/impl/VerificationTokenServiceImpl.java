@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.authentication.repository.AuthUserRepository;
@@ -34,25 +35,21 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
 	private final AuthUserRepository authUserRepository;
 
 	@Override
+	@Transactional(rollbackFor = BaseException.class)
 	public VerificationToken createVerificationToken(AuthUser authUser, TokenPurpose tokenPurpose) {
-		VerificationToken token = new VerificationToken();
-		token.setVerificationToken(UUID.randomUUID().toString());
-		token.setAuthUser(authUser);
-		token.setExpiryDateTime(LocalDateTime.now().plusMinutes(expiration));
-		token.setTokenPurpose(tokenPurpose);
-		token.setTokenStatus(TokenStatus.ACTIVE);
 
-		return verificationTokenRepository.save(token);
+		VerificationToken verificationToken = VerificationToken.builder()
+				.verificationToken(UUID.randomUUID().toString()).authUser(authUser)
+				.expiryDateTime(LocalDateTime.now().plusMinutes(expiration)).tokenPurpose(tokenPurpose)
+				.tokenStatus(TokenStatus.ACTIVE).build();
+
+		emailService.sendAccountVerificationEmail(verificationToken);
+
+		return verificationTokenRepository.save(verificationToken);
 	}
 
 	@Override
-	public void sendVerificationEmail(VerificationToken verificationToken) {
-
-		emailService.sendVerificationEmail(verificationToken);
-
-	}
-
-	@Override
+	@Transactional(rollbackFor = BaseException.class)
 	public void verifyAccount(String token) {
 		VerificationToken verificationToken = verificationTokenRepository.findByVerificationToken(token)
 				.orElseThrow(() -> new BaseException(new ErrorMessage(ErrorType.VERIFICATION_TOKEN_NOT_FOUND)));

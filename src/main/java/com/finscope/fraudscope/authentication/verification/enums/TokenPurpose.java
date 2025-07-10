@@ -6,6 +6,11 @@ public enum TokenPurpose {
         "Please verify your account by clicking the link below.",
         "/api/auth/verify"
     ),
+    TWO_FACTOR_AUTH(
+    	    "Two-Factor Authentication",
+    	    "Please enter the OTP sent to your email to complete login.",
+    	    "/api/auth/verify-otp"
+    ),
     PASSWORD_RESET(
         "Password Reset",
         "You requested a password reset. Click the link below to reset your password.",
@@ -16,6 +21,7 @@ public enum TokenPurpose {
         "Please confirm your new email address by clicking the link below.",
         "/api/auth/change-email"
     );
+	
 
     private final String title;
     private final String description;

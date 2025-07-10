@@ -11,18 +11,18 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Getter
 @Setter
 @Entity
 @Table(name = "refresh_tokens")
+@SuperBuilder
 public class RefreshToken extends AuditBase {
 
 	@Column(nullable = false, unique = true, length = 512)
@@ -31,7 +31,8 @@ public class RefreshToken extends AuditBase {
     @Column(nullable = false)
     private LocalDateTime expiryDate;
     
-    @Column(nullable = false)
+    @Builder.Default
+    @Column(nullable = false,columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean revoked = false;
 
     @Column(name = "ip_address")
