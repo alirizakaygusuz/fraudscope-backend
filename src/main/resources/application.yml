@@ -48,10 +48,12 @@ jwt:
     key: ${JWT_SECRET_KEY}
   access:
     token:
-      expiration-minutes: 15 # 15 minutes 
+      expiration-minutes: 15 
   refresh:
     token:
-      expiration-minutes: 60 #1 hour
+      expiration-minutes: 1440 # 1 day
+      cleanup:
+        days: 7
 
 logging:
   level:

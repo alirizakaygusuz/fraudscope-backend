@@ -31,7 +31,10 @@ public class SecurityConfig {
 	public static final String REGISTER = "/api/auth/register";
 
 	public static final String LOGIN = "/api/auth/login";
+	public static final String LOGOUT = "/api/auth/logout";
 	public static final String LOGIN_VERIFY="/api/auth/login/verify-otp";
+	
+	public static final String REFRESH_TOKEN_ROTATE = "/api/auth/refresh-token/rotate";
 
 
 	public static final String ACCOUNT_VERIFY = "/api/auth/verify";
@@ -49,7 +52,7 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			.securityContext(securityContext -> securityContext.requireExplicitSave(false))
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(REGISTER, LOGIN,ACCOUNT_VERIFY,SWAGGER_UI,SWAGGER_API_DOCS,LOGIN_VERIFY).permitAll()
+				.requestMatchers(REGISTER, LOGIN,LOGOUT,ACCOUNT_VERIFY,SWAGGER_UI,SWAGGER_API_DOCS,LOGIN_VERIFY,REFRESH_TOKEN_ROTATE).permitAll()
 				.anyRequest().authenticated()
 			)
 			.exceptionHandling(handling -> handling
