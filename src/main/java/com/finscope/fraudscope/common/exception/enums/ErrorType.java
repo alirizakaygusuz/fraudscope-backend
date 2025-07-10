@@ -33,8 +33,10 @@ public enum ErrorType implements BaseEnum {
     OTP_TOKEN_NOT_FOUND("1016","error_type.otp_token_not_found", HttpStatus.NOT_FOUND),
     OTP_TOKEN_INVALID_OR_EXPIRED("1017","error_type.verification_token_invalid_or_expired", HttpStatus.CONFLICT),
     OTP_TOKEN_IS_BLOCKED("1017","error_type_.otp_token_is_blocked", HttpStatus.BAD_REQUEST),
-    OTP_TOKEN_UPDATE_FAILED("1018", "Failed to update OTP  Token.", HttpStatus.INTERNAL_SERVER_ERROR)
+    OTP_TOKEN_UPDATE_FAILED("1018", "Failed to update OTP  Token.", HttpStatus.INTERNAL_SERVER_ERROR),
 
+    
+    REFRESH_TOKEN_INVALID("1019", "Invalid Refresh Token", HttpStatus.UNAUTHORIZED)
     
     ;
 	
