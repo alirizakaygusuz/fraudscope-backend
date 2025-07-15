@@ -37,18 +37,18 @@ import lombok.extern.slf4j.Slf4j;
 public class OtpTokenServiceImpl implements OtpTokenService {
 
 	private final OtpTokenRepository otpTokenRepository;
-	
-	private final RefreshTokenService refreshTokenService; 
-	
+
+	private final RefreshTokenService refreshTokenService;
+
 	private final EmailService emailService;
 
 	private final JWTService jwtService;
 
 	private final AuthMapper authMapper;
 
-	 @Qualifier("newTransactionTemplate")
-	 private final TransactionTemplate newTransactionTemplate;
-	
+	@Qualifier("newTransactionTemplate")
+	private final TransactionTemplate newTransactionTemplate;
+
 	@Value("${otp.expiration-seconds}")
 	private long otpExpirationSeconds;
 
@@ -56,7 +56,7 @@ public class OtpTokenServiceImpl implements OtpTokenService {
 	private int maxAttempt;
 
 	@Override
-	@Transactional(rollbackFor = {BaseException.class, Exception.class})
+	@Transactional(rollbackFor = { BaseException.class, Exception.class })
 	public OtpToken createOtpToken(AuthUser authUser, LoginRequest loginRequest, TokenPurpose tokenPurpose) {
 		OtpToken otpToken = buildOtpToken(loginRequest, tokenPurpose);
 		otpToken.setAuthUser(authUser);
@@ -71,16 +71,9 @@ public class OtpTokenServiceImpl implements OtpTokenService {
 		String otpCode = generateOtpCode();
 		String otpTokenVerification = UUID.randomUUID().toString();
 
-		return OtpToken.builder()
-				.otpCode(otpCode)
-				.otpVerificationToken(otpTokenVerification)
-				.tokenPurpose(tokenPurpose)
-				.tokenStatus(TokenStatus.ACTIVE)
-				.expiryDateTime(LocalDateTime.now()
-						.plusSeconds(otpExpirationSeconds))
-				.attemptCount(0).ipAddress(loginRequest.getIpAddress())
-				.userAgent(loginRequest.getUserAgent())
-				.build();
+		return OtpToken.builder().otpCode(otpCode).otpVerificationToken(otpTokenVerification).tokenPurpose(tokenPurpose)
+				.tokenStatus(TokenStatus.ACTIVE).expiryDateTime(LocalDateTime.now().plusSeconds(otpExpirationSeconds))
+				.attemptCount(0).ipAddress(loginRequest.getIpAddress()).userAgent(loginRequest.getUserAgent()).build();
 	}
 
 	private String generateOtpCode() {
@@ -94,7 +87,6 @@ public class OtpTokenServiceImpl implements OtpTokenService {
 	@Transactional(rollbackFor = BaseException.class)
 	public LoginResponse completeLoginWithOtp(OtpTokenRequest request) {
 
-		
 		OtpToken otpToken = otpTokenRepository
 				.findByOtpVerificationTokenAndTokenStatus(request.getOtpVerificationToken(), TokenStatus.ACTIVE)
 				.orElseThrow(() -> new BaseException(new ErrorMessage(ErrorType.OTP_TOKEN_INVALID_OR_EXPIRED)));
@@ -105,11 +97,10 @@ public class OtpTokenServiceImpl implements OtpTokenService {
 		}
 
 		if (!otpToken.getOtpCode().equals(request.getOtpCode())) {
-			increaseAttemptCount(otpToken);	
+			increaseAttemptCount(otpToken);
 			throw new BaseException(new ErrorMessage(ErrorType.OTP_TOKEN_INVALID_OR_EXPIRED));
 
 		}
-		
 
 		otpToken.setTokenStatus(TokenStatus.USED);
 		otpTokenRepository.save(otpToken);
@@ -118,36 +109,33 @@ public class OtpTokenServiceImpl implements OtpTokenService {
 
 		RefreshToken refreshToken = refreshTokenService.createAndSave(authUser, otpToken.getIpAddress(),
 				otpToken.getUserAgent());
-		
 
 		String accessToken = jwtService.generateToken(authUser);
 
 		return authMapper.toLoginResponse(authUser, accessToken, refreshToken.getToken());
 
 	}
-	
+
 	private void blockedOtptoken(OtpToken otpToken) {
-		  try {
-			  newTransactionTemplate.executeWithoutResult(status -> {
-		    		otpToken.setTokenStatus(TokenStatus.BLOCKED);
-					otpTokenRepository.save(otpToken);
-		        });
-		    } catch (Exception e) {
-		        throw new BaseException(new ErrorMessage(ErrorType.OTP_TOKEN_UPDATE_FAILED));
-		    }
+		try {
+			newTransactionTemplate.executeWithoutResult(status -> {
+				otpToken.setTokenStatus(TokenStatus.BLOCKED);
+				otpTokenRepository.save(otpToken);
+			});
+		} catch (Exception e) {
+			throw new BaseException(new ErrorMessage(ErrorType.OTP_TOKEN_UPDATE_FAILED));
+		}
 	}
-	
+
 	private void increaseAttemptCount(OtpToken otpToken) {
-	    try {
-	    	newTransactionTemplate.executeWithoutResult(status -> {
-	            otpToken.setAttemptCount(otpToken.getAttemptCount() + 1);
-	            otpTokenRepository.save(otpToken);
-	        });
-	    } catch (Exception e) {
-	        throw new BaseException(new ErrorMessage(ErrorType.OTP_TOKEN_UPDATE_FAILED));
-	    }
+		try {
+			newTransactionTemplate.executeWithoutResult(status -> {
+				otpToken.setAttemptCount(otpToken.getAttemptCount() + 1);
+				otpTokenRepository.save(otpToken);
+			});
+		} catch (Exception e) {
+			throw new BaseException(new ErrorMessage(ErrorType.OTP_TOKEN_UPDATE_FAILED));
+		}
 	}
-
-
 
 }
