@@ -52,7 +52,8 @@ public class RolePermission extends SoftDeletableAuditBase {
 	@JoinColumn(name = "permission_id", nullable = false)
 	private Permission permission;
 
-	@Column(name = "granted_by", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "granted_by", nullable = false)
 	private AuthUser grantedBy;
 
 	@Column(name = "granted_at", nullable = false)
@@ -69,7 +70,7 @@ public class RolePermission extends SoftDeletableAuditBase {
 	private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "approved_by")
+	@JoinColumn(name = "approved_by", nullable = false)
 	private AuthUser approvedBy;
 
 	@Column(name = "approved_at")

@@ -15,9 +15,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
+
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JWTService jwtService;
@@ -29,7 +32,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
-		
+
 
 		String header = request.getHeader("Authorization");
 
@@ -60,5 +63,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 			filterChain.doFilter(request, response);
 		}
+		
+		filterChain.doFilter(request, response);
+
 	}
 }

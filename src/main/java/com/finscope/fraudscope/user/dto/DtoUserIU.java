@@ -1,28 +1,24 @@
 package com.finscope.fraudscope.user.dto;
 
-import java.time.LocalDate;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class DtoUserIU {
-
+	@NotBlank
 	private String name;
-
+	
+	@NotBlank
 	private String surname;
 
+	@NotBlank
 	private String phoneNumber;
-
-	private String address;
-
-	private String country;
-
-	private LocalDate dateOfBirth;
-	
 }

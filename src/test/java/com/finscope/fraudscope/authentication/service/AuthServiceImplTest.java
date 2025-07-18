@@ -207,6 +207,8 @@ class AuthServiceImplTest {
 
 		when(authUserRepository.findByUsernameOrEmail(loginRequest.getEmailOrUsername()))
 				.thenReturn(Optional.of(authUser));
+		
+
 		when(passwordEncoder.matches(loginRequest.getPassword(), authUser.getPassword())).thenReturn(true);
 
 		RefreshToken refreshToken = AuthTestDataFactory.createValidRefreshToken();
@@ -255,6 +257,29 @@ class AuthServiceImplTest {
 				authMapper);
 
 	}
+	
+
+	@DisplayName("login() should throw USER_NOT_FOUND when AuthUser marked soft deleted")
+	@Test
+	void shouldThrowUserNotFound_whenAuthUserMarkedSoftdeleted() {
+		LoginRequest loginRequest = AuthTestDataFactory.createValidLoginRequest();
+		AuthUser authUser = AuthTestDataFactory.createValidAuthUser();
+		authUser.setDeleted(true);
+		
+		when(authUserRepository.findByUsernameOrEmail(loginRequest.getEmailOrUsername()))
+				.thenReturn(Optional.of(authUser));
+
+
+		BaseException exception = assertThrows(BaseException.class, () -> authServiceImpl.login(loginRequest));
+		assertThat(exception.getErrorMessage().getErrorType()).isEqualTo(ErrorType.USER_NOT_FOUND);
+
+		
+		verify(authUserRepository).findByUsernameOrEmail(loginRequest.getEmailOrUsername());
+		verifyNoInteractions(roleRepository,passwordEncoder,refreshTokenService, jwtService, verificationTokenService, otpTokenService,
+				authMapper);
+
+	}
+
 
 	@DisplayName("login() should throw INVALID_PASSWORD when AuthUser exists but password is incorrect")
 	@Test

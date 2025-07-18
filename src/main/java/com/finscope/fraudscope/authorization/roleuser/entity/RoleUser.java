@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(
 	    name = "role_users",
-	    uniqueConstraints = { @UniqueConstraint(columnNames = { "role_id", "user_id" }) },
+	    uniqueConstraints = { @UniqueConstraint(columnNames = { "role_id", "auth_user_id" }) },
 	    indexes = {
 	        @Index(name = "idx_role_users_deleted", columnList = "deleted")}
 	  )

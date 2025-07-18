@@ -48,7 +48,7 @@ jwt:
     key: ${JWT_SECRET_KEY}
   access:
     token:
-      expiration-minutes: 15 
+      expiration-minutes:  60
   refresh:
     token:
       expiration-minutes: 1440 # 1 day
@@ -57,7 +57,8 @@ jwt:
 
 logging:
   level:
-    org.springframework.boot.context.config: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
 
 verification:
   token:
@@ -74,3 +75,10 @@ otp:
   expiration-seconds: 180
   delete-after-days: 30
   max-attempt: 3
+
+permission:
+  seeder:
+    system-auth-user:
+       name: ${SYSTEM_AUTH_USER_NAME}
+       email: ${SYSTEM_AUTH_USER_EMAIL}
+       password: ${SYSTEM_AUTH_USER_PASSWORD}

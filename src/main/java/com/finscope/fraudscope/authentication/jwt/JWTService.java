@@ -3,15 +3,16 @@ package com.finscope.fraudscope.authentication.jwt;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.common.exception.BaseException;
 import com.finscope.fraudscope.common.exception.ErrorMessage;
 import com.finscope.fraudscope.common.exception.enums.ErrorType;
@@ -35,21 +36,34 @@ public class JWTService {
 	@Value("${jwt.access.token.expiration-minutes}")
 	private Long accessTokenExpiration;
 
-	public String generateToken(UserDetails userDetails) {
+	public String generateToken(AuthUser authUser) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("roles", userDetails.getAuthorities().stream()
-		    .map(GrantedAuthority::getAuthority)
-		    .collect(Collectors.toList()));
+		
+		
+		
+		List<String> permissions= authUser.getAuthorities()
+									.stream()
+									.map(GrantedAuthority::getAuthority)
+									.collect(Collectors.toList());
+		
+		List<String> roles = authUser.getUserRoles()
+								.stream()
+								.map(roleUser-> roleUser.getRole().getName())
+								.collect(Collectors.toList());
+		
+		
+		claims.put("permissions", permissions);
+		claims.put("roles", roles);
+		
+		
 
 		return Jwts.builder()
 		    .setClaims(claims)
-		    .setSubject(userDetails.getUsername())
+		    .setSubject(authUser.getUsername())
 		    .setIssuedAt(new Date())
-		    .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+		    .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration * 60 * 1000))
 		    .signWith(getKey(), SignatureAlgorithm.HS256)
 		    .compact();
-
-
 	}
 
 	public String getUsernameByToken(String token) {
@@ -78,7 +92,6 @@ public class JWTService {
 		Claims claims = getClaims(token);
 
 		return claimsFunction.apply(claims);
-
 	}
 
 	public Claims getClaims(String token) {
