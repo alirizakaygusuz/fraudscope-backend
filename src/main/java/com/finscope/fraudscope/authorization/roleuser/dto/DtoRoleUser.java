@@ -2,7 +2,6 @@ package com.finscope.fraudscope.authorization.roleuser.dto;
 
 import com.finscope.fraudscope.authentication.dto.DtoAuthUser;
 import com.finscope.fraudscope.authorization.role.dto.DtoRole;
-import com.finscope.fraudscope.user.dto.DtoUser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

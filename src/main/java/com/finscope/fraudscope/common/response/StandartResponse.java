@@ -20,6 +20,7 @@ public class StandartResponse<T> {
 	@Schema(description = "Actual data returned by the API such as login details or error information.")
     private T payload;
 	
+	
 	@Schema(
 		    description = "Timestamp of the response in 'YYYY-MM-DDThh:mm:ss' format",
 		    example = "2025-07-04T22:12:00"

@@ -24,9 +24,9 @@ import com.finscope.fraudscope.authentication.verification.otp.entity.OtpToken;
 import com.finscope.fraudscope.authentication.verification.otp.service.OtpTokenService;
 import com.finscope.fraudscope.authentication.verification.token.service.VerificationTokenService;
 import com.finscope.fraudscope.authorization.role.entity.Role;
+import com.finscope.fraudscope.authorization.role.enums.PredefinedRole;
 import com.finscope.fraudscope.authorization.role.repository.RoleRepository;
 import com.finscope.fraudscope.authorization.roleuser.entity.RoleUser;
-import com.finscope.fraudscope.common.enums.PredefinedRole;
 import com.finscope.fraudscope.common.exception.BaseException;
 import com.finscope.fraudscope.common.exception.ErrorMessage;
 import com.finscope.fraudscope.common.exception.enums.ErrorType;
@@ -86,6 +86,7 @@ public class AuthServiceImpl implements AuthService {
 			throw new BaseException(new ErrorMessage(ErrorType.EMAIL_ALREADY_EXISTS, registerRequest.getEmail()));
 
 		}
+		
 	}
 
 
@@ -140,6 +141,12 @@ public class AuthServiceImpl implements AuthService {
 		AuthUser authUser = authUserRepository.findByUsernameOrEmail(usernameOrEmail).orElseThrow(
 				() -> new BaseException(new ErrorMessage(ErrorType.USERNAME_OR_EMAIL_NOT_FOUND, usernameOrEmail)));
 
+		
+		if (authUser.getDeleted()) {
+			throw new BaseException(new ErrorMessage(ErrorType.USER_NOT_FOUND));
+
+		}
+		
 		if (!passwordEncoder.matches(password, authUser.getPassword())) {
 			throw new BaseException(new ErrorMessage(ErrorType.INVALID_PASSWORD, password));
 

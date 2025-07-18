@@ -19,7 +19,7 @@ public abstract class BaseResponseController {
 
     //204
     public <T> ResponseEntity<StandartResponse<T>> noContent() {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(StandartResponse.noContent());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     //400

@@ -8,7 +8,7 @@ import org.hibernate.annotations.SQLRestriction;
 import com.finscope.fraudscope.common.audit.SoftDeletableAuditBase;
 import com.finscope.fraudscope.common.enums.AccountType;
 import com.finscope.fraudscope.common.enums.CurrencyType;
-import com.finscope.fraudscope.user.entity.User;
+import com.finscope.fraudscope.user.enduser.entity.EndUser;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -60,7 +60,7 @@ public class Account extends SoftDeletableAuditBase {
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+	private EndUser user;
 
 	
 	public void setId(Long id) {

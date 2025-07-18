@@ -22,6 +22,7 @@ public enum ErrorType implements BaseEnum {
 	VERIFICATION_TOKEN_INVALID_OR_EXPIRED("1009","error_type.verification_token_invalid_or_expired", HttpStatus.CONFLICT),
 	
 	
+	
     
     INVALID_TOKEN_SIGNATURE("1010", "Invalid token signature", HttpStatus.UNAUTHORIZED),
     MALFORMED_TOKEN("1011", "Malformed token", HttpStatus.BAD_REQUEST),
@@ -31,12 +32,28 @@ public enum ErrorType implements BaseEnum {
     EMAIL_SENDING_FAILED("1015", "error_type.email_sending_failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
     OTP_TOKEN_NOT_FOUND("1016","error_type.otp_token_not_found", HttpStatus.NOT_FOUND),
-    OTP_TOKEN_INVALID_OR_EXPIRED("1017","error_type.verification_token_invalid_or_expired", HttpStatus.CONFLICT),
-    OTP_TOKEN_IS_BLOCKED("1017","error_type_.otp_token_is_blocked", HttpStatus.BAD_REQUEST),
-    OTP_TOKEN_UPDATE_FAILED("1018", "Failed to update OTP  Token.", HttpStatus.INTERNAL_SERVER_ERROR),
+    OTP_TOKEN_INVALID_OR_EXPIRED("1017","error_type.otp_token_invalid_or_expired", HttpStatus.CONFLICT),
+    OTP_TOKEN_IS_BLOCKED("1018","error_type_.otp_token_is_blocked", HttpStatus.BAD_REQUEST),
+    OTP_TOKEN_UPDATE_FAILED("1019", "Failed to update OTP  Token.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     
-    REFRESH_TOKEN_INVALID("1019", "Invalid Refresh Token", HttpStatus.UNAUTHORIZED)
+    REFRESH_TOKEN_INVALID("1020", "Invalid Refresh Token", HttpStatus.UNAUTHORIZED),
+    
+    AUTH_USER_NOT_FOUND("1021", "error_type.auth_user_not_found",HttpStatus.NOT_FOUND),
+    USER_ALREADY_EXISTS("1022", "error_type.user_already_exists",HttpStatus.CONFLICT),
+    USER_NOT_FOUND("1023", "error_type.user_not_found",HttpStatus.NOT_FOUND),
+
+    
+    ENDUSER_DETAILS_NOT_FOUND("1024", "error_type.enduser_details_not_found",HttpStatus.NOT_FOUND),
+
+    ADMIN_ALREADY_EXISTS("1025", "error_type.admin_already_exists",HttpStatus.CONFLICT),
+    ADMIN_DETAILS_NOT_FOUND("1026", "error_type.admin_details_not_found",HttpStatus.NOT_FOUND),
+
+    
+    
+    AUTHENTICATION_NOT_VALID("1027", "error_type.authentication_not_valid",HttpStatus.UNAUTHORIZED),
+    AUTHENTICATION_USERNAME_NOT_VALID("1028", "error_type.authentication_username_not_valid",HttpStatus.UNAUTHORIZED)
+
     
     ;
 	

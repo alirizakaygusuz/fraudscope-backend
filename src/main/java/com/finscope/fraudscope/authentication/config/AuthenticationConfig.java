@@ -7,12 +7,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
 import com.finscope.fraudscope.authentication.repository.AuthUserRepository;
+import com.finscope.fraudscope.common.exception.BaseException;
+import com.finscope.fraudscope.common.exception.ErrorMessage;
+import com.finscope.fraudscope.common.exception.enums.ErrorType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,18 +25,19 @@ public class AuthenticationConfig {
 	private final AuthUserRepository authUserRepository;
 	
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+	 RestTemplate restTemplate(RestTemplateBuilder builder) {
 		return builder.build();
 	}
 
 	@Bean
-	public UserDetailsService userDetailsService() {
-		return username -> authUserRepository.findByUsername(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+	 UserDetailsService userDetailsService() {
+	    return username -> authUserRepository.findWithRolesAndPermissionsByUsername(username)
+	            .orElseThrow(() -> new BaseException(new ErrorMessage(ErrorType.AUTH_USER_NOT_FOUND)));
 	}
 
+
 	@Bean
-	public DaoAuthenticationProvider daoAuthenticationProvider() {
+	 DaoAuthenticationProvider daoAuthenticationProvider() {
 
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 		daoAuthenticationProvider.setUserDetailsService(userDetailsService());
@@ -44,13 +47,13 @@ public class AuthenticationConfig {
 	}
 
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+	 AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
 			throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	 PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 	

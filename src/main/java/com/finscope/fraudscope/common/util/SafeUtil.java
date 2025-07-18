@@ -1,6 +1,7 @@
 package com.finscope.fraudscope.common.util;
 
 import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

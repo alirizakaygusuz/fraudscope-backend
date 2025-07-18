@@ -17,6 +17,7 @@ import com.finscope.fraudscope.common.audit.SoftDeletableAuditBase;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -52,7 +53,7 @@ public class AuthUser extends SoftDeletableAuditBase implements UserDetails {
 	@Column(name = "two_factor_enabled", nullable = false , columnDefinition ="BOOLEAN DEFAULT TRUE" )
 	private boolean twoFactorEnabled = true;
 
-	@OneToMany(mappedBy = "authUser", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "authUser", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private Set<RoleUser> userRoles;
 
 	@Override
@@ -63,6 +64,7 @@ public class AuthUser extends SoftDeletableAuditBase implements UserDetails {
 				.collect(Collectors.toSet());
 	}
 
+	
 	
 	//Handle  later!!!!!!!!!!!!!!!!! 
 	@Override
