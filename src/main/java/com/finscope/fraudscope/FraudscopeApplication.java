@@ -8,8 +8,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.finscope.fraudscope.common.bootstrap.DotenvInitializer;
-
 @ComponentScan(basePackages = "com.finscope.fraudscope")
 @EntityScan(basePackages = "com.finscope.fraudscope")
 @EnableJpaRepositories(basePackages = "com.finscope.fraudscope")
@@ -20,9 +18,8 @@ import com.finscope.fraudscope.common.bootstrap.DotenvInitializer;
 public class FraudscopeApplication {
 
 	public static void main(String[] args) {
-	    SpringApplication app = new SpringApplication(FraudscopeApplication.class);
-	    app.addInitializers(new DotenvInitializer());
-	    app.run(args);
+		SpringApplication app = new SpringApplication(FraudscopeApplication.class);
+		app.run(args);
 	}
 
 }
