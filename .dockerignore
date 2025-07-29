@@ -1,0 +1,32 @@
+# Maven build output directories
+#target/
+build/
+
+# Environment variables
+.env
+*.env
+
+# IDE configuration folders
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# Git-related files
+.git
+.gitignore
+
+# System-specific and log files
+*.log
+.DS_Store
+
+# Security-sensitive files
+*.pem
+*.key
+*.crt
+*.jks
+
+# Swagger generated cache
+.swagger-cache/
