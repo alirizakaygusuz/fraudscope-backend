@@ -1,52 +1,93 @@
 services:
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka_fraudscope_container
+    restart: unless-stopped
+    ports:
+      - "9092:9092"   # host -> HOST listener
+    environment:
+      # 1.Controller listener: Broker-> metadata(KRaft)
+      KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
+      # 2. Host listener: Host
+      KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:9093
+      # 3. Docker listener: Docker
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
 
-    mysql:
-        image: mysql:8.0
-        container_name: mysql_container
-        restart: always
-        environment:
-            MYSQL_DATABASE: fraudscope
-            MYSQL_USER: ${DB_USERNAME}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # KRaft 
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9091
 
-        ports:
-            - "3306:3306"
-        healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-            interval: 30s
-            timeout: 10s
-            retries: 5
-        volumes:
-            - mysql_data:/var/lib/mysql
-        networks:
-            - fraudscope_network
+      #Providing communication between brokers
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
 
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: fraudscope:0.0.1
-        container_name: fraudscope_app
-       
-        ports:
-            - "8080:8080"
-        depends_on:
-            mysql:
-                condition: service_healthy
-        env_file:
-            - .env
-        environment:
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fraudscope
-            - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-            - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-            - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-        networks:
-            - fraudscope_network
+      # Broker config
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    #Health check
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - fraudscope_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_fraudscope_container
+    restart: always
+    environment:
+      MYSQL_DATABASE: fraudscope
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - fraudscope_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fraudscope:0.0.2
+    container_name: fraudscope_app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fraudscope
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+    ports:
+      - "8080:8080"
+    networks:
+      - fraudscope_network
 
 networks:
-    fraudscope_network:
-        driver: bridge
+  fraudscope_network:
+    driver: bridge
+
 volumes:
-    mysql_data:
-        driver: local
+  mysql_data:
+    driver: local
+  kafka_data:
