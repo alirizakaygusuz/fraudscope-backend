@@ -42,7 +42,7 @@ spring:
           auth: true
           starttls:
             enable: true
-# JWT 
+# JWT configuration
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
@@ -54,28 +54,36 @@ jwt:
       expiration-minutes: 1440 # 1 day
       cleanup:
         days: 7
-
+#Logging
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
-
+#Verification Token
 verification:
   token:
     expiration-minutes: 240 # 4 hour
 
+#Swagger
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
     path: /swagger-ui
-
+#OTP config
 otp:
   expiration-seconds: 180
   delete-after-days: 30
   max-attempt: 3
 
+#Kafka Topic Configuration
+app:
+  kafka:
+    topic:
+      auth-verification-mail: auth-verification-mail
+      auth-otp-mail: auth-otp-mail
+#Permisson Seeder
 permission:
   seeder:
     system-auth-user:
