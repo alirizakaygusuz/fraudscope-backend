@@ -15,10 +15,10 @@ public class MailProducerServiceImpl implements MailProducerService {
 
 	private final KafkaTemplate<String, KafkaMailPayload> kafkaTemplate;
 
-	@Value("${app.kafka.topic.auth-verification-mail}")
+	@Value("${app.kafka.auth.topic.verification-mail}")
 	private String verificationMailTopic;
 
-	@Value("${app.kafka.topic.auth-otp-mail}")
+	@Value("${app.kafka.auth.topic.otp-mail}")
 	private String otpMailTopic;
 
 	@Override

@@ -15,21 +15,19 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-	
+
 	private final MailProducerService mailProducerService;
 
-	
 	public void sendAccountVerificationEmail(VerificationToken verificationToken) {
-	  KafkaMailPayload kafkaMailPayload = convertToKafkaMailPayload(verificationToken);
-	  mailProducerService.sendVerificationToken(kafkaMailPayload);
+		KafkaMailPayload kafkaMailPayload = convertToKafkaMailPayload(verificationToken);
+		mailProducerService.sendVerificationToken(kafkaMailPayload);
 	}
 
 	public void sendOtpCodeEmail(OtpToken otpToken) {
-		 KafkaMailPayload kafkaMailPayload = convertToKafkaMailPayload(otpToken);
-		 mailProducerService.sendOtpToken(kafkaMailPayload);
+		KafkaMailPayload kafkaMailPayload = convertToKafkaMailPayload(otpToken);
+		mailProducerService.sendOtpToken(kafkaMailPayload);
 	}
-	
-	
+
 	private KafkaMailPayload convertToKafkaMailPayload(MailTokenPayload payload) {
 		String toEmail = payload.getRecipientEmail();
 		TokenPurpose purpose = payload.getTokenPurpose();
@@ -41,16 +39,11 @@ public class EmailService {
 				.queryParam("token", token).toUriString();
 
 		String content = buildContent(payload, actionUrl);
-		
-		return KafkaMailPayload.builder()
-				.subject(subject)
-				.toEmail(toEmail)
-				.content(content)
-				.build();
-		
-		
+
+		return KafkaMailPayload.builder().subject(subject).toEmail(toEmail).content(content).build();
+
 	}
-	
+
 	private String buildContent(MailTokenPayload payload, String actionUrl) {
 		String subject = payload.getTokenPurpose().getTitle();
 		String message = payload.getTokenPurpose().getDescription();
@@ -76,44 +69,41 @@ public class EmailService {
 				""", subject, message, actionUrl, actionUrl);
 	}
 
-
-// LEGACY - SMTP Email
-//		private final JavaMailSender mailSender;
-//
-// 		@Value("${spring.mail.username}")
-//		private String fromMail;
-//
-//	private void sendTokenEmail(MailTokenPayload payload) {
-//		String toEmail = payload.getRecipientEmail();
-//		TokenPurpose purpose = payload.getTokenPurpose();
-//
-//		String subject = purpose.getTitle();
-//		String token = payload.getTokenValue();
-//
-//		String actionUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(purpose.getPath())
-//				.queryParam("token", token).toUriString();
-//
-//		String content = buildContent(payload, actionUrl);
-//
-//		sendEmail(toEmail, subject, content);
-//	}
-//
-//	private void sendEmail(String toEmail, String subject, String content) {
-//		try {
-//			MimeMessage mimeMessage = mailSender.createMimeMessage();
-//			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-//
-//			helper.setTo(toEmail);
-//			helper.setSubject(subject);
-//			helper.setFrom("no-reply" + fromMail);
-//			helper.setText(content, true);
-//
-//			mailSender.send(mimeMessage);
-//		} catch (Exception e) {
-//			throw new BaseException(new ErrorMessage(ErrorType.EMAIL_SENDING_FAILED));
+	// LEGACY - SMTP Email
+//			private final JavaMailSender mailSender;
+	//
+//	 		@Value("${spring.mail.username}")
+//			private String fromMail;
+	//
+//		private void sendTokenEmail(MailTokenPayload payload) {
+//			String toEmail = payload.getRecipientEmail();
+//			TokenPurpose purpose = payload.getTokenPurpose();
+	//
+//			String subject = purpose.getTitle();
+//			String token = payload.getTokenValue();
+	//
+//			String actionUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(purpose.getPath())
+//					.queryParam("token", token).toUriString();
+	//
+//			String content = buildContent(payload, actionUrl);
+	//
+//			sendEmail(toEmail, subject, content);
 //		}
-//	}
-
-	
+	//
+//		private void sendEmail(String toEmail, String subject, String content) {
+//			try {
+//				MimeMessage mimeMessage = mailSender.createMimeMessage();
+//				MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+	//
+//				helper.setTo(toEmail);
+//				helper.setSubject(subject);
+//				helper.setFrom("no-reply" + fromMail);
+//				helper.setText(content, true);
+	//
+//				mailSender.send(mimeMessage);
+//			} catch (Exception e) {
+//				throw new BaseException(new ErrorMessage(ErrorType.EMAIL_SENDING_FAILED));
+//			}
+//		}
 
 }

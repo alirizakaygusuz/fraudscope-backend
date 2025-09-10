@@ -1,5 +1,6 @@
 server:
   port: 8080
+
 spring:
   application:
     name: fraudscope
@@ -29,7 +30,7 @@ spring:
     basename: currency_type,account_ty,transaction_status,transaction_type,approval_status,error_type
     encoding: UTF-8
     fallback-to-system-locale: false
-#SMTP  
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -42,51 +43,73 @@ spring:
           auth: true
           starttls:
             enable: true
+
+  # Kafka Infra Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.finscope.fraudscope.kafka.dto"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# Kafka Domain Configuration
+app:
+  kafka:
+    auth:
+      topic:
+        verification-mail: verification-mail
+        otp-mail: otp-mail
+      consumer: 
+        group-id: auth-mail-group
+
+
 # JWT configuration
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
   access:
     token:
-      expiration-minutes:  60
+      expiration-minutes: 60
   refresh:
     token:
       expiration-minutes: 1440 # 1 day
       cleanup:
         days: 7
-#Logging
+
+# Logging
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
-#Verification Token
+
+# Verification Token
 verification:
   token:
-    expiration-minutes: 240 # 4 hour
+    expiration-minutes: 240 # 4 hours
 
-#Swagger
+# Swagger
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
     path: /swagger-ui
-#OTP config
+
+# OTP config
 otp:
   expiration-seconds: 180
   delete-after-days: 30
   max-attempt: 3
 
-#Kafka Topic Configuration
-app:
-  kafka:
-    topic:
-      auth-verification-mail: auth-verification-mail
-      auth-otp-mail: auth-otp-mail
-#Permisson Seeder
+
+# Permission Seeder
 permission:
   seeder:
     system-auth-user:
-       name: ${SYSTEM_AUTH_USER_NAME}
-       email: ${SYSTEM_AUTH_USER_EMAIL}
-       password: ${SYSTEM_AUTH_USER_PASSWORD}
+      name: ${SYSTEM_AUTH_USER_NAME}
+      email: ${SYSTEM_AUTH_USER_EMAIL}
+      password: ${SYSTEM_AUTH_USER_PASSWORD}
