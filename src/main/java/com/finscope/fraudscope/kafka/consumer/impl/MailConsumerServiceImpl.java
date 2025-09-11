@@ -22,7 +22,7 @@ public class MailConsumerServiceImpl implements MailConsumerService {
 	@KafkaListener(topics = "${app.kafka.auth.topic.verification-mail}" , groupId = "${app.kafka.auth.consumer.group-id}")
 	public void consumeVerificationTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> record) {
 		KafkaMailPayload payload = record.value();
-		log.info(" [Kafka] Received verification mail payload: {}", payload);
+		log.info(" [Kafka] Received verification mail key {} | payload: {}",record.key(),payload);
 		mailDispatcherService.sendEmail(payload);
 
 	}
@@ -31,7 +31,7 @@ public class MailConsumerServiceImpl implements MailConsumerService {
 	@KafkaListener(topics = "${app.kafka.auth.topic.otp-mail}" , groupId = "${app.kafka.auth.consumer.group-id}")
 	public void consumeOtpTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> record) {
 		KafkaMailPayload payload = record.value();
-		log.info(" [Kafka] Received OTP mail payload: {}", payload);
+		log.info(" [Kafka] Received OTP mail  key {} | payload:{} ",record.key(),payload);
 		mailDispatcherService.sendEmail(payload);
 
 	}

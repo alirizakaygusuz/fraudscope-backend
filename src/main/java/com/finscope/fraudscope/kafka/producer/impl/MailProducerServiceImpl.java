@@ -20,16 +20,19 @@ public class MailProducerServiceImpl implements MailProducerService {
 
 	@Value("${app.kafka.auth.topic.otp-mail}")
 	private String otpMailTopic;
-
+	
 	@Override
 	public void sendVerificationToken(KafkaMailPayload mailPayload) {
-		kafkaTemplate.send(verificationMailTopic, mailPayload);
+		String key = mailPayload.getToEmail();
+		//topic , key, value
+		kafkaTemplate.send(verificationMailTopic,key, mailPayload);
 
 	}
 
 	@Override
 	public void sendOtpToken(KafkaMailPayload mailPayload) {
-		kafkaTemplate.send(otpMailTopic, mailPayload);
+		String key = mailPayload.getToEmail();
+		kafkaTemplate.send(otpMailTopic,key, mailPayload);
 
 	}
 
