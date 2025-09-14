@@ -78,6 +78,8 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.badRequest().body(createApiError(validationErrors, request, HttpStatus.BAD_REQUEST));
 	}
+	
+	
 
 	private String getHostName() {
 		try {

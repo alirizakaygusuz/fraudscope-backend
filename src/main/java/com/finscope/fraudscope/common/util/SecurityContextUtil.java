@@ -8,6 +8,10 @@ import com.finscope.fraudscope.common.exception.ErrorMessage;
 import com.finscope.fraudscope.common.exception.enums.ErrorType;
 
 public class SecurityContextUtil {
+	
+	private SecurityContextUtil() {
+		
+	}
 
 	public static String getCurrentUsername() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -15,6 +15,7 @@ import com.finscope.fraudscope.user.enduser.mapper.EndUserMapper;
 import com.finscope.fraudscope.user.enduser.repository.EndUserRepository;
 import com.finscope.fraudscope.user.enduser.service.EndUserService;
 import com.finscope.fraudscope.user.service.UserService;
+
 import lombok.RequiredArgsConstructor;
 
 @Service

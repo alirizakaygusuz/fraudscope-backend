@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RestController
 @AllArgsConstructor
 public class RefreshTokenContoller extends BaseResponseController {

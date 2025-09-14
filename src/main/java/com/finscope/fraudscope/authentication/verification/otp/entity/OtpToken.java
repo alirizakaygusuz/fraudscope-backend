@@ -56,12 +56,4 @@ public class OtpToken extends AbstractVerificationTokenBase implements MailToken
 		return this.getAuthUser().getEmail();
 	}
 	
-	@Override
-	public TokenStatus getTokenStatus() {
-		return super.getTokenStatus();
-	}
-
-
-	
-
 }

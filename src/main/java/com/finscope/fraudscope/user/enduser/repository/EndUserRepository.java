@@ -12,6 +12,4 @@ public interface EndUserRepository extends JpaRepository<EndUser, Long> {
 	
 	Optional<EndUser> findByAuthUserId(Long id);
 	
-	
-
 }

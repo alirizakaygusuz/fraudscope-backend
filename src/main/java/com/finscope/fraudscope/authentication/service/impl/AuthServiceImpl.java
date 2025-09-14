@@ -1,5 +1,7 @@
 package com.finscope.fraudscope.authentication.service.impl;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -129,8 +131,6 @@ public class AuthServiceImpl implements AuthService {
 		RefreshToken refreshToken = refreshTokenService.createAndSave(authUser, loginRequest.getIpAddress(),
 				loginRequest.getUserAgent());
 
-	
-		
 		String accessToken = jwtService.generateToken(authUser);
 
 		return authMapper.toLoginResponse(authUser, accessToken, refreshToken.getToken());
@@ -147,6 +147,8 @@ public class AuthServiceImpl implements AuthService {
 
 		}
 		
+		checkRateLimitLock(authUser);
+		
 		if (!passwordEncoder.matches(password, authUser.getPassword())) {
 			throw new BaseException(new ErrorMessage(ErrorType.INVALID_PASSWORD, password));
 
@@ -159,5 +161,23 @@ public class AuthServiceImpl implements AuthService {
 		return authUser;
 
 	}
+	
+	private void checkRateLimitLock(AuthUser authUser){
+		if(authUser.getLastRateLimitWarnSentAt() != null) {
+			long minSinceLastWarn = Duration.between(authUser.getLastRateLimitWarnSentAt(), LocalDateTime.now()).toMinutes();
+			
+			if(minSinceLastWarn < 15) {
+				throw new BaseException(new ErrorMessage(
+		                ErrorType.REDIS_RATE_LIMIT_EXCEEDED, 
+		                "Too many login attempts. Please try again in " + (15 - minSinceLastWarn) + " minutes."
+		            ));
+			}else {
+				 authUser.setLastRateLimitWarnSentAt(null);
+			     authUserRepository.save(authUser); 
+			}
+		}
+	}
+	
+	
 
 }

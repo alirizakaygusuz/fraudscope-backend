@@ -28,16 +28,16 @@ public class SecurityConfig {
 	
 	private final AccessDeniedHandler accessDeniedHandler;
 
-	public static final String REGISTER = "/api/auth/register";
+	public static final String REGISTER = "/api/v1/auth/register";
 
-	public static final String LOGIN = "/api/auth/login";
-	public static final String LOGOUT = "/api/auth/logout";
-	public static final String LOGIN_VERIFY="/api/auth/login/verify-otp";
+	public static final String LOGIN = "/api/v1/auth/login";
+	public static final String LOGOUT = "/api/v1/auth/logout";
+	public static final String LOGIN_VERIFY="/api/v1/auth/login/verify-otp";
 	
-	public static final String REFRESH_TOKEN_ROTATE = "/api/auth/refresh-token/rotate";
+	public static final String REFRESH_TOKEN_ROTATE = "/api/v1/auth/refresh-token/rotate";
 
 
-	public static final String ACCOUNT_VERIFY = "/api/auth/verify";
+	public static final String ACCOUNT_VERIFY = "/api/v1/auth/verify";
 	
 
 	
@@ -46,7 +46,7 @@ public class SecurityConfig {
 	
 	
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+	 SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
 		return httpSecurity
 			.csrf(csrf -> csrf.disable())
@@ -65,4 +65,5 @@ public class SecurityConfig {
 			.build();
 	}
 
+	
 }

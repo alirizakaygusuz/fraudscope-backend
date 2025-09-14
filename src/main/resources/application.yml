@@ -1,5 +1,6 @@
 server:
   port: 8080
+
 spring:
   application:
     name: fraudscope
@@ -11,7 +12,7 @@ spring:
         enabled: false
 
   datasource:
-    url: jdbc:mysql://localhost:3306/fraudscope?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/fraudscope?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -26,10 +27,10 @@ spring:
         format_sql: true
 
   messages:
-    basename: currency_type,account_type,transaction_status,transaction_type,approval_status,error_type
+    basename: currency_type,account_ty,transaction_status,transaction_type,approval_status,error_type
     encoding: UTF-8
     fallback-to-system-locale: false
-#SMTP  
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -42,28 +43,64 @@ spring:
           auth: true
           starttls:
             enable: true
-# JWT 
+
+  # Kafka Infra Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: com.finscope.fraudscope.kafka.dto.KafkaMailPayload
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# Kafka Domain Configuration
+app:
+  kafka:
+    auth:
+      topic:
+        verification-mail: verification-mail
+        verification-mail-dlt: verification-mail.DLT
+        otp-mail: otp-mail
+        otp-mail-dlt: otp-mail.DLT
+        rate-limit-mail: rate-limit-mail
+        rate-limit-mail-dlt: rate-limit-mail.DLT
+      consumer: 
+        auth-group-id: auth-mail-group
+        rate-limit-group-id: rate-limit-group-id
+        dlt-otp-group-id: dlt-otp-mail-group
+        dlt-verification-group-id: dlt-verification-mail-group
+        dlt-rate-limit-mail-group-id: dlt-rate-limit-mail-group-id
+
+# JWT configuration
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
   access:
     token:
-      expiration-minutes:  60
+      expiration-minutes: 60
   refresh:
     token:
       expiration-minutes: 1440 # 1 day
       cleanup:
         days: 7
 
+# Logging
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 
+# Verification Token
 verification:
   token:
-    expiration-minutes: 240 # 4 hour
+    expiration-minutes: 240 # 4 hours
 
+# Swagger
 springdoc:
   api-docs:
     enabled: true
@@ -71,14 +108,16 @@ springdoc:
     enabled: true
     path: /swagger-ui
 
+# OTP config
 otp:
   expiration-seconds: 180
   delete-after-days: 30
   max-attempt: 3
 
+# Permission Seeder
 permission:
   seeder:
     system-auth-user:
-       name: ${SYSTEM_AUTH_USER_NAME}
-       email: ${SYSTEM_AUTH_USER_EMAIL}
-       password: ${SYSTEM_AUTH_USER_PASSWORD}
+      name: ${SYSTEM_AUTH_USER_NAME}
+      email: ${SYSTEM_AUTH_USER_EMAIL}
+      password: ${SYSTEM_AUTH_USER_PASSWORD}

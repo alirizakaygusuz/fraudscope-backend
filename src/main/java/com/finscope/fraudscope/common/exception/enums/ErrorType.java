@@ -52,7 +52,15 @@ public enum ErrorType implements BaseEnum {
     
     
     AUTHENTICATION_NOT_VALID("1027", "error_type.authentication_not_valid",HttpStatus.UNAUTHORIZED),
-    AUTHENTICATION_USERNAME_NOT_VALID("1028", "error_type.authentication_username_not_valid",HttpStatus.UNAUTHORIZED)
+    AUTHENTICATION_USERNAME_NOT_VALID("1028", "error_type.authentication_username_not_valid",HttpStatus.UNAUTHORIZED),
+    
+    
+    KAFKA_DESERIALIZATION_FAILED("2001", "error_type.kafka.deserialization_failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    KAFKA_EMAIL_SEND_FAILED("2002", "error_type.kafka.email_send_failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    KAFKA_DLQ_FAILED("2003", "error_type.kafka.dlq_failed", HttpStatus.INTERNAL_SERVER_ERROR),
+
+
+    REDIS_RATE_LIMIT_EXCEEDED("3000", "error_type.redis.rate_limit_exceeded",HttpStatus.TOO_MANY_REQUESTS);
 
     
     ;

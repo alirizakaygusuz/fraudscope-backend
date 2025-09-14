@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Token Verification", description = "Endpoints for verifying email confirmation tokens during registration.")
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class VerificationController {
 
