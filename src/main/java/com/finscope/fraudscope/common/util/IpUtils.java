@@ -3,6 +3,10 @@ package com.finscope.fraudscope.common.util;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class IpUtils {
+	
+	private IpUtils() {
+		
+	}
 
     public static String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");

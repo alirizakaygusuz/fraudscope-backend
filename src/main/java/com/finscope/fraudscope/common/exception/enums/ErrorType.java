@@ -60,6 +60,8 @@ public enum ErrorType implements BaseEnum {
     KAFKA_DLQ_FAILED("2003", "error_type.kafka.dlq_failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
 
+    REDIS_RATE_LIMIT_EXCEEDED("3000", "error_type.redis.rate_limit_exceeded",HttpStatus.TOO_MANY_REQUESTS);
+
     
     ;
 	
