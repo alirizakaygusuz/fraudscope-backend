@@ -5,17 +5,18 @@ It features secure user registration with email verification, 2FA login using OT
 
 The user domain supports both `EndUser` and `Admin` roles with isolated endpoints.  
 > ⚠️ Fraud detection logic is **not implemented yet**, but the system is built with extensibility and modularity in mind.
+
 ---
 
 ## 🚀 Features
 
 ### ✅ User Registration with Email Verification
 - Email verification required before account activation  
-- Verification tokens securely generated, stored, and validated
+- Verification tokens securely generated, stored, and validated  
 
 ### 🔐 2FA Login with OTP Verification
 - After login, users must enter a one-time password (OTP) sent to their email  
-- Stateless verification using signed OTP tokens (JWT)
+- Stateless verification using signed OTP tokens (JWT)  
 
 ### 🧾 Permission-Based Access Control (RBAC)
 - Dynamic permissions enforced via `@PreAuthorize("hasAuthority(...)")`  
@@ -34,7 +35,7 @@ The user domain supports both `EndUser` and `Admin` roles with isolated endpoint
 
 ### 🌀 AOP-Based Exception Logging
 - Service-layer exceptions auto-logged with:
-  - Class, method 
+  - Class, method  
   - HTTP method, path, IP, User-Agent  
   - Exception type, message, timestamp  
 - All captured via a custom `ExceptionLogContext` model  
@@ -46,10 +47,24 @@ The user domain supports both `EndUser` and `Admin` roles with isolated endpoint
   - Revoke expired refresh tokens  
   - Hard-delete revoked tokens after X days  
 
+### 📡 Redis-Based Rate Limiting & Caching
+- Rate limiting is applied to **Login, Register, and OTP verification** endpoints  
+- Redis provides **stateless** and high-performance request limiting  
+- **User/IP-based dynamic key generation** implemented via `RateLimitKeyGenerator`  
+- When the Login endpoint exceeds its limit, a **Kafka event** is triggered and the user is notified via email  
+
+### 📬 Kafka-Driven Notification System
+- Email delivery is fully **asynchronous**:  
+  * `Producer → Kafka Topic → Consumer → Dispatcher → SMTP`  
+- **Dead Letter Queue (DLQ)** support ensures failed messages are safely redirected  
+- **Retry mechanism** with configurable backoff is applied  
+- On Redis rate limit breaches, a **Kafka-triggered email notification** is sent to the user  
+
 ### ⚙️ Centralized Error Handling
 - Global exception handler with custom `BaseException` model  
 - Structured responses: `ApiError<T>`  
 - Metadata included: `timestamp`, `path`, `status`, `i18nKey` support  
+
 
 ---
 
@@ -81,13 +96,15 @@ Test data generated via `AuthTestDataFactory`, using `Mockito` for mocks.
 | Layer        | Technologies                                      |
 |--------------|---------------------------------------------------|
 | Backend      | Java 17, Spring Boot 3.2.5                        |
-| API Docs     | Springdoc OpenAPI, Swagger UI                    |
-| Persistence  | Spring Data JPA, Hibernate, MySQL                |
-| Security     | Spring Security, JWT, BCrypt, 2FA (OTP)          |
-| Infra        | Scheduled Tasks, CommandLineRunner Seeder        |
-| Dev Tools    | Lombok, MapStruct, Maven                         |
-| Testing      | JUnit 5, Mockito                                 |
+| API Docs     | Springdoc OpenAPI, Swagger UI                     |
+| Persistence  | Spring Data JPA, Hibernate, MySQL, Redis          |
+| Security     | Spring Security, JWT, BCrypt, 2FA (OTP), Rate Limiter |
+| Messaging    | Apache Kafka, Kafka DLQ, DeadLetterPublishingRecoverer |
+| Infra        | Scheduled Tasks, CommandLineRunner Seeder         |
+| Dev Tools    | Lombok, MapStruct, Maven                          |
+| Testing      | JUnit 5, Mockito                                  |
 
+---
 
 ## 📄 API Documentation
 
@@ -101,18 +118,21 @@ Test data generated via `AuthTestDataFactory`, using `Mockito` for mocks.
 The project includes a ready-to-use Postman collection:  
 🌐 [FraudScope Public Postman Link](https://www.postman.com/lunar-module-operator-48760766/springbootprojects/collection/wxc67nh/fraudscope)
 
+---
+
 ## 📡 Sample API Endpoints
 
 | Method | Endpoint                                | Description                                       |
 |--------|-----------------------------------------|---------------------------------------------------|
-| POST   | `/api/auth/register`                    | Register new end-user (with email verification)   |
-| POST   | `/api/auth/login/verify-otp`            | Verify OTP for 2FA login                          |
-| POST   | `/api/auth/refresh-token/rotate`        | Rotate access & refresh tokens                   |
-| GET    | `/api/end-user/profile/details`         | Fetch end-user profile                            |
-| PUT    | `/api/end-user/profile/update`          | Update profile information                        |
-| DELETE | `/api/end-user/profile/delete`          | Soft delete end-user account                      |
+| POST   | `/api/v1/auth/register`                 | Register new end-user (with email verification)   |
+| POST   | `/api/v1/auth/login/verify-otp`         | Verify OTP for 2FA login                          |
+| POST   | `/api/v1/auth/refresh-token/rotate`     | Rotate access & refresh tokens                    |
+| GET    | `/api/v1/end-user/profile/details`      | Fetch end-user profile                            |
+| PUT    | `/api/v1/end-user/profile/update`       | Update profile information                        |
+| DELETE | `/api/v1/end-user/profile/delete`       | Soft delete end-user account                      |
 
 > 🔐 All endpoints require `Authorization: Bearer <access_token>` header after login & OTP verification.
+
 ---
 
 ## 🧱 Clean & Modular Architecture
@@ -126,18 +146,17 @@ The project includes a ready-to-use Postman collection:
 
 ## 🧭 Upcoming Features
 
-### 📦 Redis & Kafka Integration (Planned)
-- **Redis:** Stateless OTP token storage, caching  
-- **Kafka:** Async processing, logging, and system events  
+### 📦 Domain Endpoints
+- Account management endpoints  
+- Transaction endpoints  
+- Role & Permission endpoints  
+- RoleUser & RolePermission mapping endpoints  
 
-### 🛠️ Dockerized Deployment (Planned)
-- Dockerfile and Docker Compose for local & prod setup  
-- MySQL container & future microservices  
-
-### 📊 ElasticSearch (Planned)
-- Keyword search support for notes & transactions  
+### 📊 ElasticSearch & Pagination
+- Full-text search for notes & transactions using ElasticSearch  
 - Pagination, sorting, and filtering for large datasets  
 
+---
 
 ## ⚙️ Setup Instructions
 
