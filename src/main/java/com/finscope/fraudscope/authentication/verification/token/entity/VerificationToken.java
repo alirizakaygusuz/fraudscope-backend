@@ -3,7 +3,6 @@ package com.finscope.fraudscope.authentication.verification.token.entity;
 import com.finscope.fraudscope.authentication.entity.AuthUser;
 import com.finscope.fraudscope.authentication.verification.AbstractVerificationTokenBase;
 import com.finscope.fraudscope.authentication.verification.MailTokenPayload;
-import com.finscope.fraudscope.authentication.verification.enums.TokenStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,9 +40,5 @@ public class VerificationToken extends AbstractVerificationTokenBase implements 
 		return this.getAuthUser().getEmail();
 	}
 
-	@Override
-	public TokenStatus getTokenStatus() {
-		return super.getTokenStatus();
-	}
 
 }

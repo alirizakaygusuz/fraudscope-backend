@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.finscope.fraudscope.common.controller.BaseResponseController;
@@ -32,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = "Admin User Management", description = "Endpoints for managing user profile as admin")
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminController extends BaseResponseController{
@@ -113,7 +112,7 @@ public class AdminController extends BaseResponseController{
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
 	@PreAuthorize("hasAuthority('S_USER_PROFILE_VIEW')")
 	@GetMapping("/users/details")
-	public ResponseEntity<StandartResponse<DtoEndUser>> getSelectedUserProfilesDetails(@RequestParam String usernameOrEmail) {
+	public ResponseEntity<StandartResponse<DtoEndUser>> getSelectedUserProfilesDetails(@RequestBody String usernameOrEmail) {
 		
 		return ok(adminService.getSelectedUserProfilesDetails(usernameOrEmail));
 	}
@@ -128,7 +127,7 @@ public class AdminController extends BaseResponseController{
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
 	@PreAuthorize("hasAuthority('S_USER_PROFILE_DELETE')")
 	@DeleteMapping("/users/delete")
-	public ResponseEntity<Void> deleteEndUser(@RequestParam  String usernameOrEmail) {
+	public ResponseEntity<Void> deleteEndUser(@RequestBody  String usernameOrEmail) {
 		adminService.deleteSelectedEndUser(usernameOrEmail,getCurrentUsername());
 		return ResponseEntity.noContent().build();
 	}

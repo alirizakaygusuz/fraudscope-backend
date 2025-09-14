@@ -4,22 +4,22 @@ public enum TokenPurpose {
     ACCOUNT_VERIFICATION(
         "Account Verification",
         "Please verify your account by clicking the link below.",
-        "/api/auth/verify"
+        "/api/v1/auth/verify"
     ),
     TWO_FACTOR_AUTH(
     	    "Two-Factor Authentication",
     	    "Please enter the OTP sent to your email to complete login.",
-    	    "/api/auth/verify-otp"
+    	    "/api/v1/auth/verify-otp"
     ),
     PASSWORD_RESET(
         "Password Reset",
         "You requested a password reset. Click the link below to reset your password.",
-        "/api/auth/reset-password"
+        "/api/v1/auth/reset-password"
     ),
     EMAIL_CHANGE(
         "Email Change",
         "Please confirm your new email address by clicking the link below.",
-        "/api/auth/change-email"
+        "/api/v1/auth/change-email"
     );
 	
 

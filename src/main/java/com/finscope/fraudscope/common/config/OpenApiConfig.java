@@ -18,7 +18,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 public class OpenApiConfig {
 
 	@Bean
-	public OpenAPI fraudScopeOpenAPI() {
+	OpenAPI fraudScopeOpenAPI() {
 		String securitySchemeName = "bearerAuth";
 
 		return new OpenAPI().addSecurityItem(new SecurityRequirement().addList(securitySchemeName))

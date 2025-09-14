@@ -13,13 +13,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class OtpTokenController {
 
 	private final OtpTokenService otpTokenService;
 	
-	@PostMapping("login/verify-otp")
+	@PostMapping("/login/verify-otp")
 	public StandartResponse<?> completeLoginWithOtp(@Valid @RequestBody OtpTokenRequest request) {
 		return StandartResponse.ok(otpTokenService.completeLoginWithOtp(request));
 	}

@@ -10,14 +10,14 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class TransactionConfig {
 
 	@Bean("defaultTransactionTemplate")
-     TransactionTemplate defaultTransactionTemplate(PlatformTransactionManager manager) {
-        return new TransactionTemplate(manager); 
-    }
+	TransactionTemplate defaultTransactionTemplate(PlatformTransactionManager manager) {
+		return new TransactionTemplate(manager);
+	}
 
-    @Bean("newTransactionTemplate")
-     TransactionTemplate newTransactionTemplate(PlatformTransactionManager manager) {
-        TransactionTemplate transactionTemplate= new TransactionTemplate(manager);
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        return transactionTemplate;
-    }
+	@Bean("newTransactionTemplate")
+	TransactionTemplate newTransactionTemplate(PlatformTransactionManager manager) {
+		TransactionTemplate transactionTemplate = new TransactionTemplate(manager);
+		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		return transactionTemplate;
+	}
 }

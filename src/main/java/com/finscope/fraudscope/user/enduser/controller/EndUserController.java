@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = "User Profile", description = "Endpoints for completing user profile information")
 @RestController
-@RequestMapping("/api/end-user/profile")
+@RequestMapping("/api/v1/end-user/profile")
 @RequiredArgsConstructor
 @Slf4j
 public class EndUserController extends BaseResponseController {
