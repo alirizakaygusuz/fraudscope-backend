@@ -6,14 +6,15 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finscope.fraudscope.authentication.dto.LoginRequest;
 import com.finscope.fraudscope.authentication.verification.otp.dto.OtpTokenRequest;
 import com.finscope.fraudscope.common.web.wrapper.MultiReadHttpServletRequest;
+import com.finscope.fraudscope.redis.ratelimiter.exception.RateLimitExceededException;
+import com.finscope.fraudscope.redis.ratelimiter.exception.RateLimitExceptionHandler;
 import com.finscope.fraudscope.redis.ratelimiter.key.RateLimitKeyGenerator;
 import com.finscope.fraudscope.redis.ratelimiter.policy.RateLimitPolicies;
+import com.finscope.fraudscope.redis.ratelimiter.policy.RateLimitPolicy;
 import com.finscope.fraudscope.redis.ratelimiter.service.RedisRateLimitService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
 	private final RedisRateLimitService redisRateLimitService;
 	private final ObjectMapper objectMapper;
+	private final RateLimitExceptionHandler rateLimitExceptionHandler;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -37,28 +39,16 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 		log.info("[RateLimitInterceptor] -> Incoming request to {}", path);
 
 		if (path.endsWith("/register")) {
-
-			var policy = RateLimitPolicies.REGISTER.getPolicy();
-			String key = RateLimitKeyGenerator.forRegister(request);
-			redisRateLimitService.validateRateLimitOrThrow(key, policy.getLimit(), policy.getWindow());
-
+			handleRegisterPolicy(request);
 		} else if (path.endsWith("/login")) {
-
-			String body = extractRequestBody(request);
-			
-			log.info("RateLimitInterceptor [LOGIN] body: {}", body);
-			checkAndApplyRateLimitPolicy(body, RateLimitPolicies.LOGIN);
+			handleLoginPolicy(request);
 
 		} else if (path.endsWith("/verify-otp")) {
-			String body = extractRequestBody(request);
-			
-			log.info("RateLimitInterceptor [VERIFY-OTP] body: {}", body);
-			checkAndApplyRateLimitPolicy(body, RateLimitPolicies.VERIFY_OTP);
+			handleOtpPolicy(request);
 		}
 
 		return true;
 	}
-
 
 
 	private String extractRequestBody(HttpServletRequest request) throws IOException {
@@ -75,31 +65,44 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 		return "";
 	}
 
-	private void checkAndApplyRateLimitPolicy(String body, RateLimitPolicies policyType)
-			throws JsonProcessingException {
+	
+	
+	private void handleRegisterPolicy(HttpServletRequest request) {
+		RateLimitPolicy policy = RateLimitPolicies.REGISTER.getPolicy();
+		String key = RateLimitKeyGenerator.forRegister(request);
+		
+		log.info("[RateLimitInterceptor-handleRegisterPolicy] ->  key to {}", key);
 
-		log.info("RateLimitInterceptor [checkAndApplyRateLimitPolicy Method] body: {} | policy: {}", body,
-				policyType.getPolicy());
+		
+		redisRateLimitService.validateRateLimitOrThrow(key, policy.getLimit(), policy.getWindow());
+	}
+	
+	private void handleLoginPolicy(HttpServletRequest request) throws IOException {
+		String body = extractRequestBody(request);
+		LoginRequest loginRequest = objectMapper.readValue(body, LoginRequest.class);
+		String emailOrUsername = loginRequest.getEmailOrUsername();
+		String key = RateLimitKeyGenerator.forLogin(emailOrUsername);
+		RateLimitPolicy policy = RateLimitPolicies.LOGIN.getPolicy();
 
-		var policy = policyType.getPolicy();
-		String key = null;
+		log.info("[RateLimitInterceptor-handleLoginPolicy] ->  Body to {}", body);
 
-		if (policyType == RateLimitPolicies.LOGIN) {
-
-			LoginRequest loginRequest = objectMapper.readValue(body, LoginRequest.class);
-			String emailOrUsername = loginRequest.getEmailOrUsername();
-			key = RateLimitKeyGenerator.forLogin(emailOrUsername);
-
-		} else if (policyType == RateLimitPolicies.VERIFY_OTP) {
-
-			OtpTokenRequest otpReq = objectMapper.readValue(body, OtpTokenRequest.class);
-			String token = otpReq.getOtpVerificationToken();
-
-			key = RateLimitKeyGenerator.forOtp(token);
-
-		} else {
-			throw new IllegalArgumentException("Unsupported policy type: " + policyType);
+		try {
+			redisRateLimitService.validateRateLimitOrThrow(key, policy.getLimit(), policy.getWindow());
+		} catch (RateLimitExceededException e) {
+			rateLimitExceptionHandler.handleLoginRateLimitExceeded(emailOrUsername);
+			throw e;
 		}
+	}
+	
+	
+	private void handleOtpPolicy(HttpServletRequest request) throws IOException {
+		String body = extractRequestBody(request);
+		OtpTokenRequest otpReq = objectMapper.readValue(body, OtpTokenRequest.class);
+		String token = otpReq.getOtpVerificationToken();
+		String key = RateLimitKeyGenerator.forOtp(token);
+		RateLimitPolicy policy = RateLimitPolicies.VERIFY_OTP.getPolicy();
+		
+		log.info("[RateLimitInterceptor-handleOtpPolicy] ->  Body to {}", body);
 
 		redisRateLimitService.validateRateLimitOrThrow(key, policy.getLimit(), policy.getWindow());
 	}

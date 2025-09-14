@@ -21,19 +21,29 @@ public class MailProducerServiceImpl implements MailProducerService {
 	@Value("${app.kafka.auth.topic.otp-mail}")
 	private String otpMailTopic;
 	
+	
+	@Value("${app.kafka.auth.topic.rate-limit-mail}")
+	private String rateLimitTopic;
+	
 	@Override
 	public void sendVerificationToken(KafkaMailPayload mailPayload) {
-		String key = mailPayload.getToEmail();
 		//topic , key, value
-		kafkaTemplate.send(verificationMailTopic,key, mailPayload);
+		kafkaTemplate.send(verificationMailTopic,mailPayload.getToEmail(), mailPayload);
 
 	}
 
 	@Override
 	public void sendOtpToken(KafkaMailPayload mailPayload) {
-		String key = mailPayload.getToEmail();
-		kafkaTemplate.send(otpMailTopic,key, mailPayload);
+		kafkaTemplate.send(otpMailTopic,mailPayload.getToEmail(), mailPayload);
 
+	}
+
+	
+
+	@Override
+	public void sendRateLimitWarningMail(KafkaMailPayload mailPayload) {
+		kafkaTemplate.send(rateLimitTopic,mailPayload.getToEmail(), mailPayload);
+		
 	}
 
 }

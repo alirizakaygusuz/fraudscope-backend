@@ -19,19 +19,26 @@ public class MailConsumerServiceImpl implements MailConsumerService {
 	private final MailDispatcherService mailDispatcherService;
 
 	@Override
-	@KafkaListener(topics = "${app.kafka.auth.topic.verification-mail}" , groupId = "${app.kafka.auth.consumer.group-id}")
-	public void consumeVerificationTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> record) {
-		KafkaMailPayload payload = record.value();
-		log.info(" [Kafka] Received verification mail key {} | payload: {}",record.key(),payload);
-		mailDispatcherService.sendEmail(payload);
-
+	@KafkaListener(topics = "${app.kafka.auth.topic.verification-mail}" , groupId = "${app.kafka.auth.consumer.auth-group-id}")
+	public void consumeVerificationTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> event) {	
+		logAndDispatch("Verifciation Token", event);
 	}
 
 	@Override
-	@KafkaListener(topics = "${app.kafka.auth.topic.otp-mail}" , groupId = "${app.kafka.auth.consumer.group-id}")
-	public void consumeOtpTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> record) {
-		KafkaMailPayload payload = record.value();
-		log.info(" [Kafka] Received OTP mail  key {} | payload:{} ",record.key(),payload);
+	@KafkaListener(topics = "${app.kafka.auth.topic.otp-mail}" , groupId = "${app.kafka.auth.consumer.auth-group-id}")
+	public void consumeOtpTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> event) {
+		logAndDispatch("OTP", event);
+	}
+
+	@Override
+	@KafkaListener(topics = "${app.kafka.auth.topic.rate-limit-mail}" , groupId = "${app.kafka.auth.consumer.ratelimit-group-id}")
+	public void consumeRateLimitMailEvent(ConsumerRecord<String, KafkaMailPayload> event) {
+		logAndDispatch("RateLimit", event);
+	}
+	
+	private void logAndDispatch(String type  ,ConsumerRecord<String, KafkaMailPayload> event ) {
+		KafkaMailPayload payload = event.value();
+		log.info(" [Kafka-{}] Received {} mail  key {} | payload:{} ",type,type,event.key(),payload);
 		mailDispatcherService.sendEmail(payload);
 
 	}

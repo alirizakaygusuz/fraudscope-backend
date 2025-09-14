@@ -9,23 +9,29 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class MailDlqConsumer {
+	
 
 	@KafkaListener(topics = "${app.kafka.auth.topic.verification-mail-dlt}", groupId = "${app.kafka.auth.consumer.dlt-verification-group-id}", containerFactory = "dltKafkaListenerContainerFactory")
-	public void consumeVerificationMailDlq(ConsumerRecord<String, Object> record) {
-		log.info("[DLQ] Verification Mail DLT message received.");
-		logErrorDetails(record);
+	public void consumeVerificationMailDlq(ConsumerRecord<String, Object> event) {
+		logErrorDetails("Verification Token",event);
 	}
 
 	// json-byte Array
 	@KafkaListener(topics = "${app.kafka.auth.topic.otp-mail-dlt}", groupId = "${app.kafka.auth.consumer.dlt-otp-group-id}", containerFactory = "dltKafkaListenerContainerFactory")
-	public void consumeOtpMailDlq(ConsumerRecord<String, Object> record) {
-		log.info("[DLQ] OTP Mail DLT message received.");
-		logErrorDetails(record);
+	public void consumeOtpMailDlq(ConsumerRecord<String, Object> event) {
+		logErrorDetails("OTP",event);
 	}
-	private void logErrorDetails(ConsumerRecord<String, Object> record) {
-		log.error("[DLQ] Key: {}", record.key());
-		log.error("[DLQ] Value (raw): {}", record.value());
-		log.error("[DLQ] Partition: {}, Offset: {}", record.partition(), record.offset());
+	
+	@KafkaListener(topics = "${app.kafka.auth.topic.ratelimit-mail-dlt}", groupId = "${app.kafka.auth.consumer.dlt-rate-limit-mail-group-id}", containerFactory = "dltKafkaListenerContainerFactory")
+	public void consumeRatelimitMailDlq(ConsumerRecord<String, Object> event) {
+		logErrorDetails("RateLimit",event);
+	}
+	
+	private void logErrorDetails(String type,ConsumerRecord<String, Object> event) {
+		log.info("[DLQ-{}] {} Mail DLT message received.",type,type);
+		log.error("[DLQ] Key: {}", event.key());
+		log.error("[DLQ] Value (raw): {}", event.value());
+		log.error("[DLQ] Partition: {}, Offset: {}", event.partition(), event.offset());
 	}
 
 }

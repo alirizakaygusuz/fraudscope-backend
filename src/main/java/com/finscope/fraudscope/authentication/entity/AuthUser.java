@@ -1,5 +1,6 @@
 package com.finscope.fraudscope.authentication.entity;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,7 +56,10 @@ public class AuthUser extends SoftDeletableAuditBase implements UserDetails {
 
 	@OneToMany(mappedBy = "authUser", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private Set<RoleUser> userRoles;
-
+	
+	@Column(name = "last_rate_limit_warn_sent_at")
+	private LocalDateTime lastRateLimitWarnSentAt;
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return userRoles.stream().flatMap(roleUser -> roleUser.getRole().getRolePermissions().stream())

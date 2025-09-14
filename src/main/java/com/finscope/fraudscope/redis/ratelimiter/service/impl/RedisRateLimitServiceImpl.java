@@ -5,9 +5,7 @@ import java.time.Duration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.finscope.fraudscope.common.exception.BaseException;
-import com.finscope.fraudscope.common.exception.ErrorMessage;
-import com.finscope.fraudscope.common.exception.enums.ErrorType;
+import com.finscope.fraudscope.redis.ratelimiter.exception.RateLimitExceededException;
 import com.finscope.fraudscope.redis.ratelimiter.service.RedisRateLimitService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,7 +39,7 @@ public class RedisRateLimitServiceImpl implements RedisRateLimitService {
 		boolean allowed = isAllowed(key, limit, window);
 		
 		if(!allowed) {
-			throw new BaseException(new ErrorMessage(ErrorType.REDIS_RATE_LIMIT_EXCEEDED));
+			throw new RateLimitExceededException(key);
 		}
 	}
 

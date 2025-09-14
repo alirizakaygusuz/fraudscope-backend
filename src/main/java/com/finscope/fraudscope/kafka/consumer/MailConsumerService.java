@@ -6,8 +6,10 @@ import com.finscope.fraudscope.kafka.dto.KafkaMailPayload;
 
 public interface MailConsumerService {
 
-	void consumeVerificationTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> record);
+	void consumeVerificationTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> event);
 
-	void consumeOtpTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> record);
+	void consumeOtpTokenMailEvent(ConsumerRecord<String, KafkaMailPayload> event);
+	
+	void consumeRateLimitMailEvent(ConsumerRecord<String, KafkaMailPayload> event);
 
 }

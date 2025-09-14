@@ -7,5 +7,7 @@ public interface MailProducerService {
 	void sendVerificationToken(KafkaMailPayload mailPayload);
 
 	void sendOtpToken(KafkaMailPayload mailPayload);
+	
+	void sendRateLimitWarningMail(KafkaMailPayload mailPayload);
 
 }

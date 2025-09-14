@@ -67,10 +67,14 @@ app:
         verification-mail-dlt: verification-mail.DLT
         otp-mail: otp-mail
         otp-mail-dlt: otp-mail.DLT
+        rate-limit-mail: rate-limit-mail
+        rate-limit-mail-dlt: rate-limit-mail.DLT
       consumer: 
-        group-id: auth-mail-group
+        auth-group-id: auth-mail-group
+        rate-limit-group-id: rate-limit-group-id
         dlt-otp-group-id: dlt-otp-mail-group
         dlt-verification-group-id: dlt-verification-mail-group
+        dlt-rate-limit-mail-group-id: dlt-rate-limit-mail-group-id
 
 # JWT configuration
 jwt:
