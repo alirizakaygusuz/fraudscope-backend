@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -111,8 +112,8 @@ public class AdminController extends BaseResponseController{
 			@ApiResponse(responseCode = "404", description = "User profile does not exists"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
 	@PreAuthorize("hasAuthority('S_USER_PROFILE_VIEW')")
-	@GetMapping("/users/details")
-	public ResponseEntity<StandartResponse<DtoEndUser>> getSelectedUserProfilesDetails(@RequestBody String usernameOrEmail) {
+	@GetMapping("/users/details/{usernameOrEmail}")
+	public ResponseEntity<StandartResponse<DtoEndUser>> getSelectedUserProfilesDetails(@PathVariable String usernameOrEmail) {
 		
 		return ok(adminService.getSelectedUserProfilesDetails(usernameOrEmail));
 	}
@@ -126,8 +127,8 @@ public class AdminController extends BaseResponseController{
 			@ApiResponse(responseCode = "404", description = "User profile does not exists"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
 	@PreAuthorize("hasAuthority('S_USER_PROFILE_DELETE')")
-	@DeleteMapping("/users/delete")
-	public ResponseEntity<Void> deleteEndUser(@RequestBody  String usernameOrEmail) {
+	@DeleteMapping("/users/delete/{usernameOrEmail}")
+	public ResponseEntity<Void> deleteEndUser(@PathVariable  String usernameOrEmail) {
 		adminService.deleteSelectedEndUser(usernameOrEmail,getCurrentUsername());
 		return ResponseEntity.noContent().build();
 	}
