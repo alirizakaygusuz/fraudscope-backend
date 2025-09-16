@@ -43,7 +43,11 @@ public enum PredefinedPermisson implements BaseEnum {
     S_TRANSACTION_DELETE,
 
     S_ROLE_ASSIGN,
-    S_PERMISSION_MANAGE;
+    S_PERMISSION_MANAGE,
+	
+	S_PERMISSION_UPDATE , 
+	S_PERMISSION_VIEW;
+
 
     @Override
     public String getCode() {
